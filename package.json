@@ -1,0 +1,22 @@
+{
+  "name": "multi-bot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "serve": "nodemon index.js"
+  },
+  "author": "Alice088",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-telegram-bot-api": "^0.64.0",
+    "nodemon": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0"
+  }
+}
