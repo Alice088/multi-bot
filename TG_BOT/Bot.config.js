@@ -1,6 +1,7 @@
-import { session, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
 import { ConfigService } from "../config/config.service.js";
 import { StartCommand } from "./commands/Start.command.js";
+import LocalSession from "telegraf-session-local";
 
 class Bot {
 	bot;
@@ -8,7 +9,8 @@ class Bot {
     
 	constructor(configService) {
 		this.bot = new Telegraf(configService.get("TOKEN_TG"));
-		this.bot.use(session());
+		this.bot.use(new LocalSession({ database: "session.json" }).middleware());
+		//yet here's simple db later I will add well db
 	}
 
 	init() {
@@ -18,14 +20,16 @@ class Bot {
 			command.handle();
 		}
 
-		this.bot.launch()
-			.then(() => console.log("Bot has been started!"))
+		this.bot.launch({ dropPendingUpdates: true })
 			.catch((error) => {
 				console.log("Bot has been no started");
 				throw error;
 			});
+
+		console.log("Bot has been started!");
 	}
 }
 
 const bot = new Bot(new ConfigService());
 bot.init();
+
