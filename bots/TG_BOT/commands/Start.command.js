@@ -10,7 +10,7 @@ export class StartCommand {
 
 	handle() {
 		this.bot.start((ctx) => {
-			ctx.reply("Добро пожаловать в Мульти-Бот👋🏻)", Markup.inlineKeyboard([
+			ctx.reply("Добро пожаловать в Мульти-Бот👋🏻!", Markup.inlineKeyboard([
 				Markup.button.callback("Начать поиск людей", "find"),
 				Markup.button.callback("Сохраненные люди", "savedPeople")
 			]));

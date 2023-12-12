@@ -1,11 +1,11 @@
 import { Telegraf } from "telegraf";
-import { ConfigService } from "../config/config.service.js";
+import { ConfigService } from "../../config/config.service.js";
 import { StartCommand } from "./commands/Start.command.js";
 import LocalSession from "telegraf-session-local";
 
 class Bot {
 	bot;
-	commands = [];
+	commands;
     
 	constructor(configService) {
 		this.bot = new Telegraf(configService.get("TOKEN_TG"));
@@ -14,6 +14,8 @@ class Bot {
 	}
 
 	init() {
+		const startInit = Date.now();
+
 		this.commands = [new StartCommand(this.bot)];
 
 		for (const command of this.commands) {
@@ -26,7 +28,11 @@ class Bot {
 				throw error;
 			});
 
-		console.log("Bot has been started!");
+		const endInit = Date.now();
+
+		console.log(
+			`TG Bot has been started! for: \n ${endInit - startInit} milliseconds \n in ${new Date(Date.now())} \n`
+		);
 	}
 }
 

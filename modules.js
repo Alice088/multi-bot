@@ -1,2 +1,3 @@
-import "./TG_BOT/Bot.config.js";
-import "./TG_BOT/commands/Start.command.js";
+import "./bots/TG_BOT/Bot.config.js";
+import "./bots/TG_BOT/commands/Start.command.js";
+import "./bots/VK_BOT/Bot.config.js";
