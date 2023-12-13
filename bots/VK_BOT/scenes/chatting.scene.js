@@ -1,15 +1,17 @@
 export function chattingScene() {
-	this.bot.updates.on("message_new", (ctx) => {
-		if(ctx.text === "Начать поиск людей") {
-			return this.bot.scene.enter("chatting");
-		}	
+	this.bot.updates.on("message_new", async (ctx, next) => {
+		if(ctx.text === "Начать общение") {
+			return ctx.scene.enter("chatting");
+		} else {
+			return next();
+		}
 	});
-
+	
 	this.sceneManager.addScenes([
 		new this.StepScene("chatting", [
 			(ctx) => {
 				if(ctx.scene.step.firstTime || !ctx.text) {
-					return ctx.send("Напишите корректное @телеграмАйди человека");
+					return ctx.send("Напишите корректное @Юзернейм человека");
 				}
 			}
 		])

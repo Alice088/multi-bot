@@ -28,6 +28,8 @@ class Bot {
 		for (const action of actions) {
 			action.call(this);
 		}
+        
+		return this;
 	}
 
 	async initBot() {
@@ -44,8 +46,6 @@ class Bot {
 }
 
 const bot = new Bot(new ConfigService());
-bot.initActions(
-	startCommand,
-	chattingScene,
-);
-bot.initBot();
+bot
+    .initActions(startCommand, chattingScene)
+    .initBot();
