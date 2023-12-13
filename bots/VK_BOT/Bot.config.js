@@ -1,40 +1,51 @@
 import { VK } from "vk-io";
 import { ConfigService } from "../../config/config.service.js";
-import { StartCommand } from "./commands/Start.command.js";
-import { ChattingScene } from "./scenes/Chatting.scene.js";
+import { startCommand } from "./commands/start.command.js";
+import { chattingScene } from "./scenes/chatting.scene.js";
+import { SessionManager } from "@vk-io/session";
+import { SceneManager, StepScene } from "@vk-io/scenes";
 
 class Bot {
 	bot;
-	actions;
+	sessionManager;
+	sceneManager;
+	StepScene;
     
 	constructor(configService) {
 		this.bot = new VK({
 			token: configService.get("TOKEN_VK"),
 			apiVersion: "5.199"
 		} );
+		this.sessionManager = new SessionManager();
+		this.sceneManager = new SceneManager();
+		this.StepScene = StepScene;
+	}
+    
+	initActions(...actions) {
+		this.bot.updates.on("message_new", this.sessionManager.middleware);
+		this.bot.updates.on("message_new", this.sceneManager.middleware);
+
+		for (const action of actions) {
+			action.call(this);
+		}
 	}
 
-	async init() {
+	async initBot() {
 		const startInit = Date.now();
-
-		this.actions = [
-			new StartCommand(this.bot),
-			new ChattingScene(this.bot)
-		];
-
-		for (const action of this.actions) {
-			action.handle();
-		}
 		
-		await this.bot.updates.startPolling().catch((err) => console.error("Error during starting VK BOT: " + err));
-		
-		const endInit = Date.now();
-
-		console.log(
-			`VK Bot has been started! for: \n ${endInit - startInit} milliseconds \n in ${new Date(Date.now())} \n`
-		);
+		await this.bot.updates.startPolling()
+			.then(() => {
+				console.log(
+					`VK Bot has been started! for: \n ${Date.now() - startInit} milliseconds \n in ${new Date(Date.now())} \n`
+				);
+			})
+			.catch((err) => console.error("Error during starting VK BOT: " + err));
 	}
 }
 
 const bot = new Bot(new ConfigService());
-bot.init();
+bot.initActions(
+	startCommand,
+	chattingScene,
+);
+bot.initBot();
