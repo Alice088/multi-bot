@@ -31,7 +31,13 @@ class Bot {
 		const endInit = Date.now();
 
 		console.log(
-			`TG Bot has been started! for: \n ${endInit - startInit} milliseconds \n in ${new Date(Date.now())} \n`
+			`${"-".repeat(90)} \n` +
+
+			"TG Bot has been started! \n" +
+			`  for: ${endInit - startInit} milliseconds \n` +
+			`  in ${new Date(Date.now())} \n` +
+
+			`${"-".repeat(90)} \n`
 		);
 	}
 }

@@ -38,7 +38,13 @@ class Bot {
 		await this.bot.updates.startPolling()
 			.then(() => {
 				console.log(
-					`VK Bot has been started! for: \n ${Date.now() - startInit} milliseconds \n in ${new Date(Date.now())} \n`
+					`${"-".repeat(90)} \n` +
+
+					"VK Bot has been started! \n" +
+					`  for: ${Date.now() - startInit} milliseconds \n` + 
+					`  in ${new Date(Date.now())} \n` +
+
+					`${"-".repeat(90)} \n`
 				);
 			})
 			.catch((err) => console.error("Error during starting VK BOT: " + err));
@@ -47,5 +53,5 @@ class Bot {
 
 const bot = new Bot(new ConfigService());
 bot
-    .initActions(startCommand, chattingScene)
-    .initBot();
+	.initActions(startCommand, chattingScene)
+	.initBot();

@@ -16,6 +16,7 @@
     "@vk-io/session": "^2.2.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "mysql2": "^3.6.5",
     "nodemon": "^3.0.2",
     "telegraf": "^4.15.3",
     "telegraf-session-local": "^2.1.1",
