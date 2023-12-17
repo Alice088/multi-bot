@@ -12,7 +12,7 @@ export const connection = await mysql.createConnection({
 	port: configService.get("SQL_PORT"),
 	user: configService.get("SQL_USER")
 }).catch(err => {
-	console.log("Database connection wasn't completed, bacause: \n ", err);
+	console.log("Database connection wasn't completed, because: \n ", err);
 	throw err;
 });	
 
