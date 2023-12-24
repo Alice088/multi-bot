@@ -1,4 +1,4 @@
-import "./db/Database.controller.js";
+import "./db/contollers/User.controller.js";
 import "./config/config.service.js";
 import "./bots/TG_BOT/Bot.config.js";
 import "./bots/TG_BOT/commands/Start.command.js";

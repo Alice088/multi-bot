@@ -3,7 +3,7 @@ import { Keyboard } from "vk-io";
 
 export function startCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
-		if(ctx.text === "Начать" || ctx.text ===  "начать") {
+		if (ctx.text === "Начать" || ctx.text === "начать") {
 			await ctx.reply("Добро пожаловать в Мульти-бот!🥳", {
 				keyboard: Keyboard.keyboard([
 					Keyboard.textButton({

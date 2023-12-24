@@ -16,6 +16,12 @@ export const connection = await mysql.createConnection({
 	throw err;
 });	
 
+await connection.connect()
+	.catch(err => {
+		console.log("Database connection wasn't completed, because: \n ", err);
+		throw err;
+	});	
+
 console.log(
 	`${"-".repeat(90)} \n` +
 

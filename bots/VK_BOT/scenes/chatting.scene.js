@@ -11,7 +11,7 @@ export function chattingScene() {
 		new this.StepScene("chatting", [
 			(ctx) => {
 				if(ctx.scene.step.firstTime || !ctx.text) {
-					return ctx.send("Напишите корректное @Юзернейм человека");
+					return ctx.send("Напишите корректное @Юзернейм человека из телеграма");
 				}
 			}
 		])
