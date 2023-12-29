@@ -1,24 +1,19 @@
-import { Keyboard } from "vk-io";
-
-
 export function startCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
 		if (ctx.text === "Начать" || ctx.text === "начать") {
-			await ctx.reply("Добро пожаловать в Мульти-бот!🥳", {
-				keyboard: Keyboard.keyboard([
-					Keyboard.textButton({
-						label: "Начать общение",
-						color: "positive",
-					}),
+			const [user] = await this.bot.api.users.get({
+				user_id: ctx.senderId
+			});
 
-					Keyboard.textButton({
-						label: "Ваши сохранненые люди",
-						color: "primary",
-					})
-				]).oneTime()
+			await ctx.reply(`Добро пожаловать в Мульти-бот, ${user.first_name}!🥳`, {
+				keyboard: this.Keyboard.keyboard(this.defaultKeyboard).oneTime()
 			});
 
 			await ctx.send({ sticker_id: 50 });
+		} else if(ctx.text === "Домой") {
+			await ctx.reply("Снова привет!", {
+				keyboard: this.Keyboard.keyboard(this.defaultKeyboard).oneTime(), 
+			});
 		} else {
 			return next();
 		}

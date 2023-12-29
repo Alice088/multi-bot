@@ -41,8 +41,8 @@ export async function getAllUsers() {
 	};
 }
 
-export async function checkUsernameDuplicates(anyUsername) {
-	const data = await getUser(anyUsername);
+export async function checkUsernameDuplicates(ID) {
+	const data = await getUser(ID);
 	
 	if (!data.result && (data.rows.length === 0)) {
 		return {
@@ -59,8 +59,8 @@ export async function checkUsernameDuplicates(anyUsername) {
 	//else false
 }
 
-export async function getUser(anyUsername) {
-	const [rows] = await connection.execute(`SELECT * FROM users WHERE VKID LIKE "${anyUsername}" OR TGID LIKE "${anyUsername}"`)
+export async function getUser(ID) {
+	const [rows] = await connection.execute(`SELECT * FROM users WHERE VKID = "${ID}" OR TGID = "${ID}"`)
 		.catch(error => {
 			console.error("Error in getUser: \n", error);
 				

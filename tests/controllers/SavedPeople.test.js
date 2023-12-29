@@ -1,7 +1,6 @@
 import { connection } from "../../db/Database.config";
 import { createUser, deleteUser } from "../../db/contollers/User.controller";
 import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwner, deleteSavedPeople, checkVkAndTgIdDuplicate } from "../../db/contollers/SavedPeople.controller";
-
 import { describe, expect, test, afterAll, beforeAll } from "@jest/globals";
 
 let testUserId;
