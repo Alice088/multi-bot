@@ -1,13 +1,14 @@
 import { connection } from "../../db/Database.config";
 import { createUser, deleteUser } from "../../db/contollers/User.controller";
 import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwner, deleteSavedPeople, checkVkAndTgIdDuplicate } from "../../db/contollers/SavedPeople.controller";
-import { describe, expect, test, afterAll, beforeAll } from "@jest/globals";
+import { describe, expect, test, afterAll } from "@jest/globals";
 
-let testUserId;
+const newUser = await createUser(123456789, 987654321); 
+
 
 describe("CRUD of saved_people", () => {
 	test("ADD_SAVED_PEOPLE: adds new saved people, return { result: boolean, id: number, text: string }", async () => {
-		const data = await addSavedPeople(testUserId, "alice", "Говф_ьшфв", null, null);
+		const data = await addSavedPeople(newUser.ownerID, 123456789, "Говф_ьшфв", null, null);
     
 		const rows = await getSavedPeopleByID(data.id);
 
@@ -16,7 +17,7 @@ describe("CRUD of saved_people", () => {
 	});
   
 	test("GET_SAVED_PEOPLE_BY_ID: gets savedPeople by ID, return { result: boolean, rows: savedPeople, text: string }", async () => {
-		const data = await addSavedPeople(testUserId, "TEST_TEST_TEST", null, null, "TEST_TEST_TEST");
+		const data = await addSavedPeople(newUser.ownerID, 123456789, null, null, 987654321);
     
 		const rows = await getSavedPeopleByID(data.id);
     
@@ -25,9 +26,9 @@ describe("CRUD of saved_people", () => {
 	});
 
 	test("GET_SAVED_PEOPLE_BY_OWNERID: gets savedPeople[] by ownerID, return { result: boolean, rows: savedPeople[], text: string }", async () => {
-		const data = await addSavedPeople(testUserId, "TEST_TEST_TEST", null, null, "TEST_TEST_TEST");
+		const data = await addSavedPeople(newUser.ownerID, 123456789, null, null, 987654321);
     
-		const rows = await getSavedPeopleByOwner(testUserId);
+		const rows = await getSavedPeopleByOwner(newUser.ownerID);
     
 		expect(rows.result).toBeTruthy();
 		if(data.result) await deleteSavedPeople(data.id);
@@ -44,19 +45,15 @@ describe("CRUD of saved_people", () => {
 				rows: row[]
 			}
 		`, async () => {
-			const data = await checkVkAndTgIdDuplicate(testUserId, null, null);
+			const data = await checkVkAndTgIdDuplicate(newUser.ownerID, null, null);
+			console.log(data);
 
 			expect(data.result).toBeTruthy();
 		});
 });
 
-beforeAll(async () => {
-	const { ownerID } = await createUser("TESTER", "TESTER");
-	testUserId = ownerID;
-});
-
 afterAll(async () => {
-	await deleteUser(testUserId);
+	await deleteUser(newUser.ownerID);
 
 	await connection.end()
 		.then(() => {

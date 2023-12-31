@@ -1,27 +1,21 @@
 import { connection } from "../Database.config.js";
 
 export async function createUser(tgid, vkid) {
-	const resultOfCheck = await checkUsernameDuplicates(tgid ? tgid : vkid);
+	const [rows] = await connection.execute(`INSERT INTO users (TGID, VKID) VALUES (${tgid}, ${vkid})`)
+		.catch(error => {
+			console.error("Error in createUser: \n", error);
 
-	if (resultOfCheck.result) {
-		const [rows] = await connection.execute("INSERT INTO users (TGID, VKID) VALUES (?, ?)", [tgid ?? null, vkid ?? null])
-			.catch(error => {
-				console.error("Error in createUser: \n", error);
-
-				return {
-					result: false,
-					text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
-				};
-			});
+			return {
+				result: false,
+				text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
+			};
+		});
 
 	
-		return {
-			ownerID: rows.insertId,
-			result: true,
-		};
-	} else {
-		resultOfCheck;
-	}
+	return {
+		ownerID: rows.insertId,
+		result: true,
+	};
 }
     
 export async function getAllUsers() {
@@ -41,26 +35,8 @@ export async function getAllUsers() {
 	};
 }
 
-export async function checkUsernameDuplicates(ID) {
-	const data = await getUser(ID);
-	
-	if (!data.result && (data.rows.length === 0)) {
-		return {
-			result: true,
-			text: null
-		};
-	} else {
-		return {
-			result: false,
-			text: data.text
-		};
-	}
-	//if duplictes isn't found then true
-	//else false
-}
-
 export async function getUser(ID) {
-	const [rows] = await connection.execute(`SELECT * FROM users WHERE VKID = "${ID}" OR TGID = "${ID}"`)
+	const [rows] = await connection.execute(`SELECT * FROM users WHERE VKID = ${ID} OR TGID = ${ID}`)
 		.catch(error => {
 			console.error("Error in getUser: \n", error);
 				

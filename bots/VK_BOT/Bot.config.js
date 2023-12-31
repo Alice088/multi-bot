@@ -68,6 +68,7 @@ class Bot {
 }
 
 export const bot = new Bot(new ConfigService());
+
 bot
 	.initActions(startCommand, firstTime, chattingScene)
 	.initBot()

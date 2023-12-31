@@ -77,8 +77,8 @@ export async function checkVkAndTgIdDuplicate(ownerID, tgid, vkid) {
 	const [rows] = await connection.execute(`
 	SELECT saved_TGID, saved_VKID, ID FROM saved_people
 	WHERE ownerID = ?
-	and saved_VKID LIKE ?
-	OR saved_TGID LIKE ?`, [ownerID, vkid, tgid]
+	and saved_VKID = ?
+	OR saved_TGID = ?`, [ownerID, vkid, tgid]
 	)
 		.catch(error => {
 			console.error(error);
@@ -108,7 +108,7 @@ export async function checkVkAndTgIdDuplicate(ownerID, tgid, vkid) {
 		whereDuplicateIsnt.set(row.ID, freePlace);
 	});
 
-	if (rows.length === 0) {
+	if (!rows.length) {
 		return {
 			result: true,
 			text: "Дубликатов нет"
