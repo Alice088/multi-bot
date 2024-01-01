@@ -37,7 +37,7 @@ export async function deleteSavedPeople(id) {
 	};
 }
 
-export async function getSavedPeopleByOwner(ownerID) {
+export async function getSavedPeopleByOwnerID(ownerID) {
 	const [rows] = await connection.execute("SELECT * FROM saved_people WHERE ownerID IN (?)", [ownerID])
 		.catch(error => {
 			console.error(error);

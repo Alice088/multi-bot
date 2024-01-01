@@ -1,4 +1,4 @@
-export function firstTime() {
+export function firstTimeCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
 		if (ctx.text === "Я впервые пользуюсь этим ботом") {
 			await ctx.reply(`
@@ -8,15 +8,10 @@ export function firstTime() {
         Longpolling и очереди сообщений благодаря чему вы можете свободно общаться.
         GitHub: https://github.com/Alice088/multi-bot
       `, {
-				keyboard: this.Keyboard.keyboard([
-					this.Keyboard.textButton({
-						label: "Домой",
-						color: "primary",
-					})
-				]).inline()
+				keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).inline()
 			});
-		} else {
-			await next();
-		}
+		} 
+			
+		await next();
 	});
 }

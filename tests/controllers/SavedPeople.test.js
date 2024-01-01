@@ -1,6 +1,6 @@
 import { connection } from "../../db/Database.config";
 import { createUser, deleteUser } from "../../db/contollers/User.controller";
-import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwner, deleteSavedPeople, checkVkAndTgIdDuplicate } from "../../db/contollers/SavedPeople.controller";
+import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwnerID, deleteSavedPeople, checkVkAndTgIdDuplicate } from "../../db/contollers/SavedPeople.controller";
 import { describe, expect, test, afterAll } from "@jest/globals";
 
 const newUser = await createUser(123456789, 987654321); 
@@ -28,7 +28,7 @@ describe("CRUD of saved_people", () => {
 	test("GET_SAVED_PEOPLE_BY_OWNERID: gets savedPeople[] by ownerID, return { result: boolean, rows: savedPeople[], text: string }", async () => {
 		const data = await addSavedPeople(newUser.ownerID, 123456789, null, null, 987654321);
     
-		const rows = await getSavedPeopleByOwner(newUser.ownerID);
+		const rows = await getSavedPeopleByOwnerID(newUser.ownerID);
     
 		expect(rows.result).toBeTruthy();
 		if(data.result) await deleteSavedPeople(data.id);
