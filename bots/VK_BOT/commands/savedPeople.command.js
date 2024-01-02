@@ -1,6 +1,6 @@
 import { getUser } from "../../../db/contollers/User.controller.js";
 import { getSavedPeopleByOwnerID } from "../../../db/contollers/SavedPeople.controller.js";
-
+import { buttonsDividerHook } from "../../../hooks/buttonsDivider.hook.js";
 
 export async function savedPeopleCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
@@ -10,14 +10,7 @@ export async function savedPeopleCommand() {
 			const arrayOfSavedPeopleButtons = [];
 
 			if (savedPeople.result) {
-				for (const people of savedPeople.rows) {
-					arrayOfSavedPeopleButtons.push(
-						this.Keyboard.textButton({
-							label: `${people.saved_TGNAME ?? "не установлено"}:ID(${people.ID})`,
-							color: "primary",
-						}),
-					);
-				}
+				createArrayOfSavedPeopleButtons.call(this, 0, savedPeople.rows, arrayOfSavedPeopleButtons);
 			} else {
 				arrayOfSavedPeopleButtons.push(
 					this.Keyboard.textButton({
@@ -36,4 +29,30 @@ export async function savedPeopleCommand() {
 
 		await next();
 	});
+}
+
+function createArrayOfSavedPeopleButtons(currentPage, array, parentArray) {
+	const pages = buttonsDividerHook(array);
+
+	for (const people of pages[currentPage]) {
+		parentArray.push(
+			this.Keyboard.textButton({
+				label: `${people.saved_TGNAME ?? "не установлено"}:ID(${people.ID})`,
+				color: "primary",
+			}),
+		);
+	}
+
+	if (!(pages.length <= 3) && currentPage === 0) {
+		parentArray.push([this.Keyboard.rightArrow({ command: "Right" })]);
+	} else if (!(pages.length <= 3) && currentPage === pages.length) {
+		parentArray.push([this.Keyboard.leftArrow({ command: "Left" })]);
+	} else {
+		parentArray.push([
+			this.Keyboard.leftArrow({ command: "Left" }),
+			this.Keyboard.rightArrow({ command: "Right" })
+		]);
+	}
+
+	return pages;
 }

@@ -78,6 +78,22 @@ class Bot {
 			color: "negative",
 		});
 
+		this.Keyboard.leftArrow = (payload) => {
+			return this.Keyboard.textButton({
+				label: "⬅️",
+				color: "positive",
+				payload: JSON.stringify(payload)
+			});
+		};
+
+		this.Keyboard.rightArrow = (payload) => {
+			return this.Keyboard.textButton({
+				label: "➡️",
+				color: "positive",
+				payload: JSON.stringify(payload)
+			});
+		};
+
 		return this;
 	}
 }
