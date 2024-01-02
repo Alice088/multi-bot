@@ -82,7 +82,7 @@ class Bot {
 			return this.Keyboard.textButton({
 				label: "⬅️",
 				color: "positive",
-				payload: JSON.stringify(payload)
+				payload: payload
 			});
 		};
 
@@ -90,7 +90,7 @@ class Bot {
 			return this.Keyboard.textButton({
 				label: "➡️",
 				color: "positive",
-				payload: JSON.stringify(payload)
+				payload: payload
 			});
 		};
 
