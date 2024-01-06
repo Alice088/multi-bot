@@ -29,7 +29,6 @@ class Bot {
 		this.bot.updates.on("message_new", this.sessionManager.middleware);
 		this.bot.updates.on("message_new", this.sceneManager.middleware);
 		this.bot.updates.on("message_new", authMiddleware);
-
 		for (const action of actions) {
 			action.call(this);
 		}

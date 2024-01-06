@@ -8,21 +8,28 @@ export async function savedPeopleCommand() {
 		const messagePayload = quickParse(ctx.payload.message.payload);
 
 		if (ctx.text === "Ваши сохранненые люди") {
-			ctx.session.page = 0;
-			const viewModel = await createArrayOfSavedPeopleView.call(this, ctx);
+			const currentUser = ctx.session.users[ctx.senderId];
 
+			currentUser?.rows ? null : currentUser.rows = await getUser(ctx.senderId);
+			currentUser.savedPeople = await getSavedPeopleByOwnerID(currentUser.rows[0].ID);
+			currentUser.currentPage = 0;
+			
+			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage);
+			
 			await ctx.reply(`Ваши сохраненные люди(${viewModel.countPeople}):`, {
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
 			});
 		} else if (messagePayload.type === "pageNavigation") {
-			const viewModel = await createArrayOfSavedPeopleView.call(this, ctx);
-			messagePayload.direction === "Left" ? --ctx.session.page : ++ctx.session.page;
+			const currentUser = ctx.session.users[ctx.senderId];
+			
+			messagePayload.direction === "Left" ? --currentUser.currentPage : ++currentUser.currentPage;
 
+			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage);
+			
 			await this.bot.api.messages.edit({
 				message: `Ваши сохраненные люди(${viewModel.countPeople}):`,
-				conversation_message_id: ctx.conversationMessageId,
-				peer_id: -223734402,
-				group_id: -223734402,
+				message_id: ctx.id,
+				peer_id: ctx.peerId,
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline()
 			});
 		}
@@ -31,15 +38,23 @@ export async function savedPeopleCommand() {
 	});
 }
 
-async function createArrayOfSavedPeopleView(ctx) {
-	const user = await getUser(ctx.senderId);
-	const savedPeople = await getSavedPeopleByOwnerID(user.rows[0].ID);
+async function createArrayOfSavedPeopleView(savedPeople, currentPage) {
 	const pages = buttonsDividerHook(savedPeople.rows);
 	const arrayOfSavedPeopleButtons = [];
 
-	if (savedPeople.result) {
-		for (const people of pages.at(ctx.session.page)) {
-			arrayOfSavedPeopleButtons.push(
+	creatingButtonsList.call(this, savedPeople.result, arrayOfSavedPeopleButtons, pages, savedPeople.text, currentPage);
+	creatingNavigationButtons.call(this, arrayOfSavedPeopleButtons, pages);
+
+	return {
+		buttons: arrayOfSavedPeopleButtons,
+		countPeople: savedPeople.rows.length
+	};
+}
+
+function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, currentPage) {
+	if (resultOfFetchData) {
+		for (const people of pages.at(currentPage)) {
+			parentArray.push(
 				this.Keyboard.textButton({
 					label: `${people.saved_TGNAME ?? "не установлено"}:ID(${people.ID})`,
 					color: "primary",
@@ -47,29 +62,26 @@ async function createArrayOfSavedPeopleView(ctx) {
 			);
 		}
 	} else {
-		arrayOfSavedPeopleButtons.push(
+		parentArray.push(
 			this.Keyboard.textButton({
-				label: savedPeople.text,
+				label: errorText,
 				color: "primary",
 			}),
 		);
 	}
 
-	arrayOfSavedPeopleButtons.push(this.Keyboard.homeButton);
+	parentArray.push(this.Keyboard.homeButton);
+}
 
-	if (!(pages.length <= 3) && ctx.session.page === 0) {
-		arrayOfSavedPeopleButtons.push([this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })]);
-	} else if (!(pages.length <= 3) && ctx.session.page === pages.length) {
-		arrayOfSavedPeopleButtons.push([this.Keyboard.leftArrow({ direction: "Left" , type: "pageNavigation"})]);
+function creatingNavigationButtons(parentArray, pages) {
+	if (!(pages.length <= 3) && pages === 0) {
+		parentArray.push([this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })]);
+	} else if (!(pages.length <= 3) && pages === pages.length) {
+		parentArray.push([this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" })]);
 	} else {
-		arrayOfSavedPeopleButtons.push([
-			this.Keyboard.leftArrow({ direction: "Left" , type: "pageNavigation"}),
+		parentArray.push([
+			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
 			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })
 		]);
 	}
-
-	return {
-		buttons: arrayOfSavedPeopleButtons,
-		countPeople: savedPeople.rows.length
-	};
 }
