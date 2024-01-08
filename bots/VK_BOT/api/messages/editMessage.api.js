@@ -4,6 +4,11 @@ import { ConfigService } from "../../../../config/config.service.js";
 const configService = new ConfigService();
 
 export async function editMessageApi(params) {
+
+	console.log({
+		...params,
+		access_token: configService.get("TOKEN_VK")
+	});
 	const { data } = await axios({
 		method: "get",
 

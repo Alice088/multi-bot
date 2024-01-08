@@ -26,11 +26,16 @@ class Bot {
 		});
 	}
 
-	initActions(...actions) {
+	initMiddlewares() {
 		this.bot.updates.on("message_new", this.sessionManager.middleware);
 		this.bot.updates.on("message_new", this.sceneManager.middleware);
 		this.bot.updates.on("message_new", authMiddleware.bind(this));
 		this.bot.updates.on("message_new", subTyperMiddleware.bind(this));
+
+		return this;
+	}
+
+	initActions(...actions) {
 		for (const action of actions) {
 			action.call(this);
 		}
@@ -102,6 +107,7 @@ class Bot {
 export const bot = new Bot(new ConfigService());
 
 bot
+	.initMiddlewares()
 	.initActions(
 		startCommand,
 		firstTimeCommand,

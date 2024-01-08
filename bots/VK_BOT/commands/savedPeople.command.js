@@ -14,22 +14,22 @@ export async function savedPeopleCommand() {
 			currentUser?.rows ? null : currentUser.rows = await getUser(ctx.senderId);
 			currentUser.savedPeople = await getSavedPeopleByOwnerID(currentUser.rows[0].ID);
 			currentUser.currentPage = 0;
-			currentUser.currentTable = null;
+			currentUser.currentTable = 0;
 			
-			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage);
+			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage, currentUser);
 			
-			await ctx.reply(`Ваши сохраненные люди(${viewModel.countPeople}):`, {
+			await ctx.reply(`Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`, {
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
 			});
 		} else if (messagePayload.type === "pageNavigation") {
 			const currentUser = ctx.session.users[ctx.senderId];
 			
-			messagePayload.direction === "Left" ? --currentUser.currentPage : ++currentUser.currentPage;
+			messagePayload.direction === "Left" ? currentUser.currentPage-- : currentUser.currentPage++;
 
-			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage);
+			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage, currentUser);
 			
 			await editMessageApi({
-				message: `Ваши сохраненные люди(${viewModel.countPeople}):`,
+				message: `Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`,
 				conversation_message_id: currentUser.currentTable.message_id,
 				peer_id: currentUser.currentTable.peer,
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
@@ -45,12 +45,12 @@ export async function savedPeopleCommand() {
 	});
 }
 
-async function createArrayOfSavedPeopleView(savedPeople, currentPage) {
+async function createArrayOfSavedPeopleView(savedPeople, currentPage, currentUser) {
 	const pages = buttonsDividerHook(savedPeople.rows);
 	const arrayOfSavedPeopleButtons = [];
 
-	creatingButtonsList.call(this, savedPeople.result, arrayOfSavedPeopleButtons, pages, savedPeople.text, currentPage);
-	creatingNavigationButtons.call(this, arrayOfSavedPeopleButtons, pages);
+	creatingButtonsList.call(this, savedPeople.result, arrayOfSavedPeopleButtons, pages, savedPeople.text, currentPage, currentUser);
+	creatingNavigationButtons.call(this, arrayOfSavedPeopleButtons, pages, currentPage);
 
 	return {
 		buttons: arrayOfSavedPeopleButtons,
@@ -58,7 +58,7 @@ async function createArrayOfSavedPeopleView(savedPeople, currentPage) {
 	};
 }
 
-function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, currentPage) {
+function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, currentPage, currentUser) {
 	if (resultOfFetchData) {
 		for (const people of pages.at(currentPage)) {
 			parentArray.push(
@@ -77,13 +77,15 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 		);
 	}
 
-	parentArray.push(this.Keyboard.homeButton);
+	currentUser.lengthOfPages = pages.length;
 }
 
-function creatingNavigationButtons(parentArray, pages) {
-	if (!(pages.length <= 3) && pages === 0) {
+function creatingNavigationButtons(parentArray, pages, currentPage) {
+	if (pages.length <= 3) {
+		return; 
+	} else if (currentPage === 0) {
 		parentArray.push([this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })]);
-	} else if (!(pages.length <= 3) && pages === pages.length) {
+	} else if ((currentPage + 1) === pages.length) {
 		parentArray.push([this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" })]);
 	} else {
 		parentArray.push([
@@ -91,4 +93,6 @@ function creatingNavigationButtons(parentArray, pages) {
 			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })
 		]);
 	}
+
+	parentArray.push(this.Keyboard.homeButton);
 }
