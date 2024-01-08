@@ -2,6 +2,7 @@ import { getUser } from "../../../db/contollers/User.controller.js";
 import { getSavedPeopleByOwnerID } from "../../../db/contollers/SavedPeople.controller.js";
 import { buttonsDividerHook } from "../../../hooks/buttonsDivider.hook.js";
 import { quickParse } from "../../../hooks/quickParse.hook.js";
+import { editMessageApi } from "../api/messages/editMessage.api.js";
 
 export async function savedPeopleCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
@@ -13,6 +14,7 @@ export async function savedPeopleCommand() {
 			currentUser?.rows ? null : currentUser.rows = await getUser(ctx.senderId);
 			currentUser.savedPeople = await getSavedPeopleByOwnerID(currentUser.rows[0].ID);
 			currentUser.currentPage = 0;
+			currentUser.currentTable = null;
 			
 			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage);
 			
@@ -26,12 +28,17 @@ export async function savedPeopleCommand() {
 
 			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage);
 			
-			await this.bot.api.messages.edit({
+			await editMessageApi({
 				message: `Ваши сохраненные люди(${viewModel.countPeople}):`,
-				message_id: ctx.id,
-				peer_id: ctx.peerId,
-				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline()
+				conversation_message_id: currentUser.currentTable.message_id,
+				peer_id: currentUser.currentTable.peer,
+				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
+				v: 5.199
 			});
+		}
+		
+		if (ctx.is(["savedPeopleTable"])) {
+			ctx.session.users[ctx.senderId].currentTable = { message_id: ctx.conversationMessageId, peer: ctx.peerId };
 		}
 
 		await next();

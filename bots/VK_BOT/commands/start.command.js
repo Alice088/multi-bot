@@ -1,11 +1,6 @@
-import { getUser } from "../../../db/contollers/User.controller.js";
-
 export function startCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
 		if ((ctx.text === "Начать" || ctx.text === "Start")) {
-			ctx.session.users ? null : ctx.session.users = {};
-			ctx.session.users[ctx.senderId] ? null : await creatingUser.call(this, ctx);
-
 			const currentUser = ctx.session.users[ctx.senderId];
 
 			await ctx.reply(
@@ -20,17 +15,4 @@ export function startCommand() {
 		
 		return next();
 	});
-}
-
-async function creatingUser(ctx) {
-	ctx.session.users[ctx.senderId] ? null : ctx.session.users[ctx.senderId] = await getUser(ctx.senderId);
-	const currentUser = ctx.session.users[ctx.senderId];
-
-	const [fetchVkUser] = await this.bot.api.users.get({
-		user_id: ctx.senderId
-	});
-
-	currentUser.id = fetchVkUser.id;
-	currentUser.firstName = fetchVkUser.first_name;
-	currentUser.lastName = fetchVkUser.lastName;
 }

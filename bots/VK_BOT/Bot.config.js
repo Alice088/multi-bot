@@ -9,7 +9,8 @@ import { firstTimeCommand } from "./commands/firstTime.command.js";
 import { homeCommand } from "./commands/home.command.js";
 import { savedPeopleCommand } from "./commands/savedPeople.command.js";
 import { chattingScene } from "./scenes/chatting.scene.js";
-import { authMiddleware } from "./middleware/Auth.middleware.js";
+import { authMiddleware, } from "./middleware/Auth.middleware.js";
+import { subTyperMiddleware } from "./middleware/subTyper.middleware.js"; //если будет не работать поменять регистр первой "s"
 
 class Bot {
 	bot;
@@ -28,7 +29,8 @@ class Bot {
 	initActions(...actions) {
 		this.bot.updates.on("message_new", this.sessionManager.middleware);
 		this.bot.updates.on("message_new", this.sceneManager.middleware);
-		this.bot.updates.on("message_new", authMiddleware);
+		this.bot.updates.on("message_new", authMiddleware.bind(this));
+		this.bot.updates.on("message_new", subTyperMiddleware.bind(this));
 		for (const action of actions) {
 			action.call(this);
 		}
