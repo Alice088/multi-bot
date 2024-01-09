@@ -8,9 +8,12 @@ import { startCommand } from "./commands/start.command.js";
 import { firstTimeCommand } from "./commands/firstTime.command.js";
 import { homeCommand } from "./commands/home.command.js";
 import { savedPeopleCommand } from "./commands/savedPeople.command.js";
+
 import { chattingScene } from "./scenes/chatting.scene.js";
-import { authMiddleware, } from "./middleware/Auth.middleware.js";
-import { subTyperMiddleware } from "./middleware/subTyper.middleware.js"; //если будет не работать поменять регистр первой "s"
+import { authMiddleware } from "./middleware/Auth.middleware.js";
+import { editContextTextToLowerCaseMiddleware } from "./middleware/editContextTextToLowerCase.middleware.js";
+
+import { UserContext } from "./classes/UserContext.class.js";
 
 class Bot {
 	bot;
@@ -18,19 +21,21 @@ class Bot {
 	sceneManager = new SceneManager();
 	StepScene = StepScene;
 	Keyboard = Keyboard;
+	userContext;
 
 	constructor(configService) {
 		this.bot = new VK({
-			token: configService.get("TOKEN_VK"),
-			apiVersion: "5.199"
+			token: configService.get("TOKEN_VK")
 		});
+
+		this.userContext = new UserContext;
 	}
 
 	initMiddlewares() {
 		this.bot.updates.on("message_new", this.sessionManager.middleware);
 		this.bot.updates.on("message_new", this.sceneManager.middleware);
 		this.bot.updates.on("message_new", authMiddleware.bind(this));
-		this.bot.updates.on("message_new", subTyperMiddleware.bind(this));
+		this.bot.updates.on("message_new", editContextTextToLowerCaseMiddleware);
 
 		return this;
 	}
@@ -46,7 +51,7 @@ class Bot {
 	async initBot() {
 		const startInit = Date.now();
 
-		await this.bot.updates.startPolling()
+		await this.bot.updates.start()
 			.then(() => {
 				console.log(
 					`${"-".repeat(90)} \n` +
@@ -58,7 +63,7 @@ class Bot {
 					`${"-".repeat(90)} \n`
 				);
 			})
-			.catch((err) => console.error("Error during starting VK BOT: " + err));
+			.catch((err) => console.error("Error during start VK BOT: " + err));
 	}
 
 	initKeyboardSetting() {
@@ -85,7 +90,7 @@ class Bot {
 		});
 
 		this.Keyboard.leftArrow = (payload) => {
-			return this.Keyboard.textButton({
+			return this.Keyboard.callbackButton({
 				label: "⬅️",
 				color: "positive",
 				payload: payload
@@ -93,10 +98,18 @@ class Bot {
 		};
 
 		this.Keyboard.rightArrow = (payload) => {
-			return this.Keyboard.textButton({
+			return this.Keyboard.callbackButton({
 				label: "➡️",
 				color: "positive",
 				payload: payload
+			});
+		};
+
+		this.Keyboard.stopButton = () => {
+			return this.Keyboard.callbackButton({
+				label: "⛔",
+				color: "negative",
+				payload: {}
 			});
 		};
 

@@ -8,5 +8,9 @@ export function buttonsDividerHook(array) {
 		i += 3;
 	}
   
+	if (pages.at(-1).length !== 3) {
+		pages.at(-1).push({ saved_TGNAME: null });
+	}
+
 	return pages;
 }

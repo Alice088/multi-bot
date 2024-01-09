@@ -1,6 +1,6 @@
 export function firstTimeCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
-		if (ctx.text === "Я впервые пользуюсь этим ботом") {
+		if (ctx.text === "я впервые пользуюсь этим ботом") {
 			await ctx.reply(
 				"Это opensource пет-проект человека Alice088, " +
         "он сделан, чтобы облегчить жизнь людям которым лень заходить в вк или телеграм, чтобы написать своим друзьям, " +

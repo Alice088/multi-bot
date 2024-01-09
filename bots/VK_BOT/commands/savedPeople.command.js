@@ -1,15 +1,12 @@
 import { getUser } from "../../../db/contollers/User.controller.js";
 import { getSavedPeopleByOwnerID } from "../../../db/contollers/SavedPeople.controller.js";
 import { buttonsDividerHook } from "../../../hooks/buttonsDivider.hook.js";
-import { quickParse } from "../../../hooks/quickParse.hook.js";
 import { editMessageApi } from "../api/messages/editMessage.api.js";
 
 export async function savedPeopleCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
-		const messagePayload = quickParse(ctx.payload.message.payload);
-
-		if (ctx.text === "Ваши сохранненые люди") {
-			const currentUser = ctx.session.users[ctx.senderId];
+		if (ctx.text === "ваши сохранненые люди") {
+			const currentUser = this.userContext[ctx.senderId];
 
 			currentUser?.rows ? null : currentUser.rows = await getUser(ctx.senderId);
 			currentUser.savedPeople = await getSavedPeopleByOwnerID(currentUser.rows[0].ID);
@@ -18,16 +15,27 @@ export async function savedPeopleCommand() {
 			
 			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage, currentUser);
 			
-			await ctx.reply(`Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`, {
+			const message = await ctx.reply(`Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`, {
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
 			});
-		} else if (messagePayload.type === "pageNavigation") {
-			const currentUser = ctx.session.users[ctx.senderId];
 			
-			messagePayload.direction === "Left" ? currentUser.currentPage-- : currentUser.currentPage++;
+			this.userContext[ctx.senderId].currentTable = { message_id: message.conversationMessageId, peer: message.peerId };
+		} 
+
+		await next();
+	});
+
+
+	this.bot.updates.on("message_event", async (ctx, next) => {
+		if (ctx.eventPayload.type === "pageNavigation") {
+			const currentUser = this.userContext[ctx.userId];
+			
+			ctx.eventPayload.direction === "Left" ? currentUser.currentPage-- : currentUser.currentPage++;
 
 			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage, currentUser);
-			
+
+			await new Promise(res => setTimeout(res, 500));
+
 			await editMessageApi({
 				message: `Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`,
 				conversation_message_id: currentUser.currentTable.message_id,
@@ -36,12 +44,8 @@ export async function savedPeopleCommand() {
 				v: 5.199
 			});
 		}
-		
-		if (ctx.is(["savedPeopleTable"])) {
-			ctx.session.users[ctx.senderId].currentTable = { message_id: ctx.conversationMessageId, peer: ctx.peerId };
-		}
 
-		await next();
+		return await next();
 	});
 }
 
@@ -62,8 +66,8 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 	if (resultOfFetchData) {
 		for (const people of pages.at(currentPage)) {
 			parentArray.push(
-				this.Keyboard.textButton({
-					label: `${people.saved_TGNAME ?? "не установлено"}:ID(${people.ID})`,
+				this.Keyboard.callbackButton({
+					label: `${people.saved_TGNAME ?? "--------------"}`,
 					color: "primary",
 				}),
 			);
@@ -84,9 +88,15 @@ function creatingNavigationButtons(parentArray, pages, currentPage) {
 	if (pages.length <= 3) {
 		return; 
 	} else if (currentPage === 0) {
-		parentArray.push([this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })]);
+		parentArray.push([
+			this.Keyboard.stopButton(),
+			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" }),
+		]);
 	} else if ((currentPage + 1) === pages.length) {
-		parentArray.push([this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" })]);
+		parentArray.push([
+			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
+			this.Keyboard.stopButton(),
+		]);
 	} else {
 		parentArray.push([
 			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
