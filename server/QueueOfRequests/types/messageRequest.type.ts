@@ -1,6 +1,7 @@
+import { message } from "./message.type.js";
+
 export type messageRequest = {
   readonly FROMID: number,
-  readonly TOID: number,
-  text: string[],
-  readonly timeStamp: number
+  readonly messages: message[],
+  readonly requestID: number
 }
