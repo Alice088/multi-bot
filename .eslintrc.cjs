@@ -1,9 +1,12 @@
 module.exports = {
+	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["@typescript-eslint"],
+	"root": true,
 	"env": {
 		"browser": true,
 		"es2021": true
 	},
-	"extends": "eslint:recommended",
 	"overrides": [
 		{
 			"env": {
@@ -44,5 +47,5 @@ module.exports = {
 		"no-unused-vars": [
 			"warn"
 		],
-	}
+	},
 };

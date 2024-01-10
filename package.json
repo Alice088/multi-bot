@@ -16,6 +16,7 @@
     "@vk-io/session": "^2.2.1",
     "axios": "^1.6.5",
     "dotenv": "^16.3.1",
+    "eslint-import-resolver-typescript": "^3.6.1",
     "express": "^4.18.2",
     "mysql2": "^3.6.5",
     "nodemon": "^3.0.2",
@@ -26,7 +27,10 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "eslint": "^8.55.0",
-    "jest": "^29.7.0"
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.3.3"
   }
 }
