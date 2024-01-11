@@ -14,6 +14,8 @@ import { authMiddleware } from "./middleware/Auth.middleware.js";
 import { editContextTextToLowerCaseMiddleware } from "./middleware/editContextTextToLowerCase.middleware.js";
 
 import { UserContext } from "./classes/UserContext.class.js";
+import { QueueOfRequests } from "../../dist/controllers/QueueOfRequests.controller.js";
+import { MessageRequest } from "../../dist/controllers/MessageRequest.controller.js";
 
 class Bot {
 	bot;
@@ -21,14 +23,14 @@ class Bot {
 	sceneManager = new SceneManager();
 	StepScene = StepScene;
 	Keyboard = Keyboard;
-	userContext;
+	userContext = new UserContext();
+	queueOfRequests = new QueueOfRequests();
+	messageRequest = new MessageRequest();
 
 	constructor(configService) {
 		this.bot = new VK({
 			token: configService.get("TOKEN_VK")
 		});
-
-		this.userContext = new UserContext;
 	}
 
 	initMiddlewares() {

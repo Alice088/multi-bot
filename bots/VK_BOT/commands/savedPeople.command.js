@@ -15,7 +15,7 @@ export async function savedPeopleCommand() {
 			
 			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPage, currentUser);
 			
-			const message = await ctx.reply(`Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`, {
+			const message = await ctx.reply(`Найдено ${viewModel.countPeople} сохраненных людей ${currentUser.lengthOfPages ? `, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:` : "" }`, {
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
 			});
 			
@@ -37,7 +37,7 @@ export async function savedPeopleCommand() {
 			await new Promise(res => setTimeout(res, 500));
 
 			await editMessageApi({
-				message: `Найдено ${viewModel.countPeople} сохраненных людей, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:`,
+				message: `Найдено ${viewModel.countPeople} сохраненных людей ${currentUser.lengthOfPages ? `, страница ${currentUser.currentPage + 1} из ${currentUser.lengthOfPages}:` : ""}`,
 				conversation_message_id: currentUser.currentTable.message_id,
 				peer_id: currentUser.currentTable.peer,
 				keyboard: this.Keyboard.keyboard(viewModel.buttons).inline(),
@@ -63,6 +63,7 @@ async function createArrayOfSavedPeopleView(savedPeople, currentPage, currentUse
 }
 
 function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, currentPage, currentUser) {
+	
 	if (resultOfFetchData) {
 		for (const people of pages.at(currentPage)) {
 			parentArray.push(
@@ -86,6 +87,7 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 
 function creatingNavigationButtons(parentArray, pages, currentPage) {
 	if (pages.length <= 3) {
+		parentArray.push(this.Keyboard.homeButton);
 		return; 
 	} else if (currentPage === 0) {
 		parentArray.push([

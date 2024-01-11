@@ -46,7 +46,6 @@ describe("CRUD of saved_people", () => {
 			}
 		`, async () => {
 			const data = await checkVkAndTgIdDuplicate(newUser.ownerID, null, null);
-			console.log(data);
 
 			expect(data.result).toBeTruthy();
 		});

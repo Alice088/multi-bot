@@ -3,13 +3,15 @@ export function buttonsDividerHook(array) {
   
 	let i = 0;
 
-	while (i < array.length) {
-		pages.push(array.slice(i, i + 3));
-		i += 3;
-	}
-  
-	if (pages.at(-1).length !== 3) {
-		pages.at(-1).push({ saved_TGNAME: null });
+	if (array.length) {
+		while (i < array.length) {
+			pages.push(array.slice(i, i + 3));
+			i += 3;
+		}
+
+		if (pages.at(-1).length !== 3) {
+			pages.at(-1).push({ saved_TGNAME: null });
+		}
 	}
 
 	return pages;
