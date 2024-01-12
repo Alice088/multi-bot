@@ -1,17 +1,17 @@
-import { IQueueOfRequests } from "../interfaces/IQueueOfRequests.interface.js";
 import { messageRequest } from "../types/messageRequest.type.js";
+import { QueueMenager } from "../classes/QueueManager.abstract.js";
 
-export class QueueOfRequests implements IQueueOfRequests {
-	private queue: Map<number, messageRequest[]> = new Map<number, messageRequest[]>();
-  
-	constructor() {}
-	
-	getRequestsByTOID(TOID: number) {
+export class QueueOfRequests extends QueueMenager<number, messageRequest> {
+	constructor() {
+		super();
+	}
+
+	getFromQueue(TOID: number) {
 		return this.queue.get(TOID);
 	}
 
-	addRequest(TOID: number, messageRequest: messageRequest): void {
-		const requests = this.getRequestsByTOID(TOID);
+	addInQueue(TOID: number, messageRequest: messageRequest): void {
+		const requests = this.getFromQueue(TOID);
 
 		if (!requests) {
 			this.queue.set(TOID, [messageRequest]);
@@ -24,11 +24,10 @@ export class QueueOfRequests implements IQueueOfRequests {
 		});
 	}
 
-	deleteRequest(TOID: number, FROMID: number, indexMessage: number): void {
-		const requests = this.getRequestsByTOID(TOID);
+	deleteFromQueue(TOID: number, requestID: number, ...indexMessage: number[]): void {
+		const requests = this.getFromQueue(TOID);
+		const request = requests?.find((req) => req.requestID === requestID);
 
-		requests?.forEach((request) => {
-			if (request.FROMID === FROMID) request.messages.splice(indexMessage, indexMessage + 1);
-		});
+		if (request) request.messages.splice(indexMessage[0], indexMessage[0] + 1);
 	}
 }
