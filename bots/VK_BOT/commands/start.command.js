@@ -1,7 +1,7 @@
 export function startCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
 		if ((ctx.text === "начать")) {
-			const currentUser = this.userContext[ctx.senderId];
+			const currentUser = this.userContext.users[ctx.senderId];
 
 			await ctx.reply(
 				ctx.senderId === 256897781

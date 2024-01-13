@@ -36,6 +36,7 @@ class Bot {
 	initMiddlewares() {
 		this.bot.updates.on("message_new", this.sessionManager.middleware);
 		this.bot.updates.on("message_new", this.sceneManager.middleware);
+		this.bot.updates.on("message_new", this.sceneManager.middlewareIntercept);
 		this.bot.updates.on("message_new", authMiddleware.bind(this));
 		this.bot.updates.on("message_new", editContextTextToLowerCaseMiddleware);
 

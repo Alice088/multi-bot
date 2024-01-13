@@ -1,31 +1,31 @@
 import { getUser, createUser } from "../../../db/contollers/User.controller.js";
 
 export async function authMiddleware(ctx, next) {
-	const usersContext = this.userContext;
-
-	usersContext.getUserContextById(ctx.senderId) ? null : await creatingUser.call(this, ctx);
-
-	if (!ctx.isOutbox && (ctx.text === "начать")) {
+	if (!this.userContext.getUserContextById(ctx.senderId)) {
 		const fetchData = await getUser(ctx.senderId);
+
+		this.userContext.users[ctx.senderId] = {};
 
 		if (fetchData.text && !fetchData.result) {
 			await createUser(null, ctx.senderId);
+			const newUser = await getUser(ctx.senderId);
+
+			this.userContext.users[ctx.senderId].rows = newUser.rows[0];
+			await creatingUserContext.call(this, ctx);
+		} else {
+			this.userContext.users[ctx.senderId].rows = fetchData.rows[0];
+			await creatingUserContext.call(this, ctx);
 		}
 	}
-  
+
 	await next();
 }
 
-async function creatingUser(ctx) {
-	const usersContext = this.userContext;
+async function creatingUserContext(ctx) {
+	const currentUser = this.userContext.users[ctx.senderId];
 	const [fetchVkUser] = await this.bot.api.users.get({
 		user_id: ctx.senderId
 	});
-
-	if (!usersContext.getUserContextById(ctx.senderId)) {
-		usersContext[ctx.senderId] = await getUser(ctx.senderId);
-	}
-	const currentUser = usersContext[ctx.senderId];
 
 	currentUser.id = fetchVkUser.id;
 	currentUser.firstName = fetchVkUser.first_name;

@@ -11,21 +11,25 @@ export function chattingScene() {
 	
 	this.sceneManager.addScenes([
 		new this.StepScene("startChatting", [
-			async (ctx) => {
-				const currentUser = this.userContext[ctx.senderId];
+			async function startChatting (ctx) {
+				const currentUser = this.userContext.users[ctx.senderId];
 
-				if (currentUser.targetUser) {
-					return ctx.scene.step.next();
-				} else if ((ctx.scene.step.firstTime || !ctx.text)) {
-					return ctx.send("Напишите корректное @Юзернейм человека из телеграма");
-				}
+				if (currentUser.targetUser) return ctx.scene.step.next();
+
+				if ((ctx.scene.step.firstTime || !ctx.text)) {
+					return ctx.reply("Напишите корректный @@Юзернейм человека из телеграма", {
+						keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).inline()
+					});
+				} else if (!ctx.text.startsWith("@@")) {
+					return ctx.send("Неккоректный @@Юзернейм, он должен содержать '@@' в начале");
+				}	
 
 				currentUser.targetUser = ctx.text;
-				await addSavedPeople(ctx.senderId, null, ctx.text, null, null);
+				await addSavedPeople(currentUser.rows.ID, null, ctx.text, null, null);
 
 				return ctx.scene.step.next();
-			},
-			async (ctx) => {
+			}.bind(this),
+			(ctx) => {
 				console.log(ctx, "next scene");
 			}
 		])
