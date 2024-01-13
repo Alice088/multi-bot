@@ -6,12 +6,16 @@ export class QueueOfRequests extends QueueMenager<number, messageRequest> {
 		super();
 	}
 
-	getFromQueue(TOID: number) {
+	getAllFromQueue(TOID: number) {
 		return this.queue.get(TOID);
 	}
 
+	getOneFromQueue(TOID: number, FROMID: number) {
+		return this.getAllFromQueue(TOID)?.find((req) => req.FROMID === FROMID);
+	}
+
 	addInQueue(TOID: number, messageRequest: messageRequest): void {
-		const requests = this.getFromQueue(TOID);
+		const requests = this.getAllFromQueue(TOID);
 
 		if (!requests) {
 			this.queue.set(TOID, [messageRequest]);
@@ -24,10 +28,13 @@ export class QueueOfRequests extends QueueMenager<number, messageRequest> {
 		});
 	}
 
-	deleteFromQueue(TOID: number, requestID: number, ...indexMessage: number[]): void {
-		const requests = this.getFromQueue(TOID);
+	deleteFromQueue(TOID: number, requestID: number, messageIndex: number): void {
+		const requests = this.getAllFromQueue(TOID);
 		const request = requests?.find((req) => req.requestID === requestID);
+		request?.messages.splice(messageIndex, messageIndex + 1);
+	}
 
-		if (request) request.messages.splice(indexMessage[0], indexMessage[0] + 1);
+	clearQueue() {
+		this.queue.clear();
 	}
 }
