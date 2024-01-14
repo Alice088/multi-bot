@@ -10,7 +10,11 @@ export function buttonsDividerHook(array) {
 		}
 
 		if (pages.at(-1).length !== 3) {
-			pages.at(-1).push({ saved_TGNAME: null });
+			const missingButtons = (3 - pages.at(-1).length);
+
+			for (let i = 0; i < missingButtons; i++) {
+				pages.at(-1).push({ saved_TGNAME: null });
+			}
 		}
 	}
 

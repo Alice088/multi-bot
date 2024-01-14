@@ -67,7 +67,7 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 		for (const people of pages.at(currentPageIndex)) {
 			parentArray.push(
 				this.Keyboard.callbackButton({
-					label: `${people.saved_TGNAME ?? "--------------"}`,
+					label: `${people.saved_TGNAME ?? "⛔"}`,
 					color: "primary",
 				}),
 			);
@@ -85,7 +85,7 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 }
 
 function creatingNavigationButtons(parentArray, pages, currentPageIndex) {
-	if (pages.length <= 3) {
+	if (pages.length < 2) {
 		parentArray.push(this.Keyboard.homeButton);
 		return; 
 	} else if (currentPageIndex === 0) {

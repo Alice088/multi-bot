@@ -1,17 +1,16 @@
 import { connection } from "../Database.config.js";
 
-export async function createUser(tgid, vkid) {
-	const [rows] = await connection.execute(`INSERT INTO users (TGID, VKID) VALUES (${tgid}, ${vkid})`)
+export async function createUser(telegramUsername, vkontakteUsername) {
+	const [rows] = await connection.execute("INSERT INTO users (Vkontakte_Username, Telegram_Username) VALUES (?, ?)", [vkontakteUsername, telegramUsername])
 		.catch(error => {
 			console.error("Error in createUser: \n", error);
 
 			return {
 				result: false,
-				text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
+				text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`,
 			};
 		});
 
-	
 	return {
 		ownerID: rows.insertId,
 		result: true,
@@ -36,7 +35,7 @@ export async function getAllUsers() {
 }
 
 export async function getUser(ID) {
-	const [rows] = await connection.execute(`SELECT * FROM users WHERE VKID = ${ID} OR TGID = ${ID}`)
+	const [rows] = await connection.execute("SELECT * FROM users WHERE ID = ?", [ID])
 		.catch(error => {
 			console.error("Error in getUser: \n", error);
 				
@@ -53,8 +52,8 @@ export async function getUser(ID) {
 	};
 }
 
-export async function updateTGUsername(newTGID, id) {
-	await connection.execute("UPDATE users SET TGID = ? WHERE ID = ?", [newTGID, id])
+export async function updateTGUsername(newTelegramUsername, ID) {
+	await connection.execute("UPDATE users SET Telegram_Username = ? WHERE ID = ?", [newTelegramUsername, ID])
 		.catch(error => {
 			console.error("Error in updateTGUsername: \n", error);
 				
@@ -67,8 +66,8 @@ export async function updateTGUsername(newTGID, id) {
 	return { result: true, text: "Успешно" };
 }
 
-export async function updateVKUsername(newVKID, id) {
-	await connection.execute("UPDATE users SET VKID = ? WHERE ID = ?", [newVKID, id])
+export async function updateVKUsername(newVkontakteUsername, ID) {
+	await connection.execute("UPDATE users SET Vkontakte_Username = ? WHERE ID = ?", [newVkontakteUsername, ID])
 		.catch(error => {
 			console.error("Error in updateVKUsername: \n", error);
 				
@@ -81,8 +80,8 @@ export async function updateVKUsername(newVKID, id) {
 	return { result: true, text: "Успешно" };
 }
 
-export async function deleteUser(id) {
-	await connection.execute("DELETE FROM users WHERE ID = ?", [id])
+export async function deleteUser(ID) {
+	await connection.execute("DELETE FROM users WHERE ID = ?", [ID])
 		.catch(error => {
 			console.error("Error in deleteUser: \n", error);
 				

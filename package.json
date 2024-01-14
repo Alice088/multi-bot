@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "full-start": "tsc && node index.js",
-    "test": "node --experimental-vm-modules  node_modules/jest/bin/jest.js --coverage",
+    "test": "node --experimental-vm-modules --trace-warnings node_modules/jest/bin/jest.js --coverage --detectOpenHandles",
     "build": "tsc",
     "build-clear": "rimraf dist && tsc"
   },
