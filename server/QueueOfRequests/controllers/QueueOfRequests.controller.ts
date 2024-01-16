@@ -17,7 +17,7 @@ export class QueueOfRequests extends QueueMenager<number, messageRequest> {
 	addInQueue(TOID: number, messageRequest: messageRequest): void {
 		const requests = this.getAllFromQueue(TOID);
 
-		if (!requests) {
+		if (!requests || requests.length === 0) {
 			this.queue.set(TOID, [messageRequest]);
 			return;
 		}
@@ -34,7 +34,16 @@ export class QueueOfRequests extends QueueMenager<number, messageRequest> {
 		request?.messages.splice(messageIndex, messageIndex + 1);
 	}
 
-	clearQueue() {
+	deleteAllRequestFromOneUserForOneUser(TOID: number, FROMID: number) {
+		const requests = this.getAllFromQueue(TOID);
+
+		if (requests) {
+			const newArray = requests.filter((req) => req.FROMID !== FROMID );
+			this.queue.set(TOID, newArray);
+		}
+	}
+
+	clearQueue(): void {
 		this.queue.clear();
 	}
 }

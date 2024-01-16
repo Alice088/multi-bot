@@ -76,5 +76,12 @@ export async function getSavedPeopleByID(ID) {
 export async function checkDuplicateSavedPeople(ownerID, username) {
 	const savedPeople = await getSavedPeopleByOwnerID(ownerID);
 
-	return [...Object.values(...savedPeople.rows)].includes(username);
+	let arrayOfPeople = [];
+	for (const peopleUsername of Object.values([...savedPeople.rows])) {
+		arrayOfPeople?.push(peopleUsername.Saved_Telegram_Username, peopleUsername.Saved_Vkontakte_Username);
+	}
+
+	arrayOfPeople ??= [{}];
+
+	return arrayOfPeople.includes(username);
 }

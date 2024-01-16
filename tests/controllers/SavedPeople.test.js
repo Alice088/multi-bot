@@ -1,6 +1,6 @@
 import { connection } from "../../db/Database.config";
 import { createUser, deleteUser } from "../../db/contollers/User.controller";
-import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwnerID, deleteSavedPeople } from "../../db/contollers/SavedPeople.controller";
+import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwnerID, deleteSavedPeople, checkDuplicateSavedPeople } from "../../db/contollers/SavedPeople.controller";
 import { describe, expect, test, afterAll } from "@jest/globals";
 
 const newUser = await createUser("\"@@BogdanSave\"", "\"@@SuperDuperBogdanSave\""); 
@@ -9,6 +9,7 @@ const newSavedPeople = await addSavedPeople(newUser.ownerID, newUser.ownerID, "\
 describe("CRUD of saved_people", () => {
 	test("ADD_SAVED_PEOPLE: adds new saved people, return { result: boolean, id: number, text: string }", async () => {
 		const newSavedPeople = await addSavedPeople(newUser.ownerID, newUser.ownerID, "\"@@GoshaSave\"", "\"@@GoshaLoxSave\"");
+		
 		expect(newSavedPeople.result).toBeTruthy();
 	});
   
@@ -19,9 +20,15 @@ describe("CRUD of saved_people", () => {
 	});
 
 	test("GET_SAVED_PEOPLE_BY_OWNERID: gets savedPeople[] by ownerID, return { result: boolean, rows: savedPeople[], text: string }", async () => {
-		const rows = await getSavedPeopleByOwnerID(newUser.ownerID);
+		const savedPeople = await getSavedPeopleByOwnerID(newUser.ownerID);
     
-		expect(rows.result).toBeTruthy();
+		expect(savedPeople.result).toBeTruthy();
+	});
+
+	test("CHECK_DUPCILATES_IN_USERNAMES: check savedPeople[] for duplicate, return boolean", async () => {
+		const isDuplicates = await checkDuplicateSavedPeople(newUser.ownerID, "\"@@GoshaSave\"");
+
+		expect(isDuplicates).toBeTruthy();
 	});
 });
 

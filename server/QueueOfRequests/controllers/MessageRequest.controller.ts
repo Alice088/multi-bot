@@ -11,12 +11,12 @@ export class MessageRequest implements IMessageRequest {
 		this.requestID = 0;
 	}
 
-	createMessageRequest<Contex extends MessageContext>(ctx: Contex): messageRequest {
+	createMessageRequest<Contex extends MessageContext>(ctx: Contex, FROMID: number): messageRequest {
 		return {
-			FROMID: ctx?.update?.message.from.id ?? ctx.senderId,
+			FROMID: FROMID,
 			messages: ([{
-				text: ctx?.update?.message.text ?? ctx.text,
-				timeStamp: ctx?.update?.message.date ?? ctx.createdAt
+				text: ctx?.update?.message.text ?? ctx?.text,
+				timeStamp: Date.now()
 			}
 			]) as message[],
 			requestID: this.requestID++

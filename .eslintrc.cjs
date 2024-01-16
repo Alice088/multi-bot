@@ -47,5 +47,8 @@ module.exports = {
 		"no-unused-vars": [
 			"warn"
 		],
+		"no-explicit-any": [
+			"off"
+		]
 	},
 };

@@ -14,8 +14,7 @@ import { authMiddleware } from "./middleware/Auth.middleware.js";
 import { editContextTextToLowerCaseMiddleware } from "./middleware/editContextTextToLowerCase.middleware.js";
 
 import { UserContext } from "./classes/UserContext.class.js";
-import { QueueOfRequests } from "../../dist/controllers/QueueOfRequests.controller.js";
-import { MessageRequest } from "../../dist/controllers/MessageRequest.controller.js";
+
 
 class Bot {
 	bot;
@@ -24,8 +23,6 @@ class Bot {
 	StepScene = StepScene;
 	Keyboard = Keyboard;
 	userContext = new UserContext();
-	queueOfRequests = new QueueOfRequests();
-	messageRequest = new MessageRequest();
 
 	constructor(configService) {
 		this.bot = new VK({
