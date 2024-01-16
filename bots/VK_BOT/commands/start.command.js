@@ -9,7 +9,7 @@ export function startCommand() {
 					: `Добро пожаловать в Мульти-бот, ${currentUser.firstName}!🥳`, {
 					keyboard: this.Keyboard.keyboard(this.Keyboard.defaultKeyboard).oneTime()
 				});
-
+			
 			await ctx.send({ sticker_id: 50 });
 		}
 		

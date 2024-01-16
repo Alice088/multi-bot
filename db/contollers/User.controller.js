@@ -34,7 +34,7 @@ export async function getAllUsers() {
 	};
 }
 
-export async function getUser(ID) {
+export async function getUserByID(ID) {
 	const [rows] = await connection.execute("SELECT * FROM users WHERE ID = ?", [ID])
 		.catch(error => {
 			console.error("Error in getUser: \n", error);
@@ -45,6 +45,24 @@ export async function getUser(ID) {
 			};
 		});
 	
+	return {
+		rows: rows,
+		result: rows.length === 0 ? false : true,
+		text: rows.length === 0 ? "Человек не найден" : null
+	};
+}
+
+export async function getUserByUsername(username) {
+	const [rows] = await connection.execute("SELECT * FROM users WHERE Vkontakte_Username LIKE ? OR Telegram_Username LIKE ?", [username, username])
+		.catch(error => {
+			console.error("Error in getUser: \n", error);
+
+			return {
+				result: false,
+				text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
+			};
+		});
+
 	return {
 		rows: rows,
 		result: rows.length === 0 ? false : true,

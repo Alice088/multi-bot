@@ -6,7 +6,13 @@ export class UserContext {
 	}
   
 	getUserContextById(id) {
-		return this.users[id];
+		const userContext = this.users[id];
+
+		if (userContext) return userContext;
+		else {
+			this.users[id] = {};
+			return userContext;
+		}
 	}
   
 	clearUsers() {

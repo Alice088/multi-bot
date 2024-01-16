@@ -1,6 +1,7 @@
 import { getSavedPeopleByOwnerID } from "../../../db/contollers/SavedPeople.controller.js";
 import { buttonsDividerHook } from "../../../hooks/buttonsDivider.hook.js";
 import { editMessageApi } from "../api/messages/editMessage.api.js";
+import { asyncSetTimeout } from "../../../hooks/asyncSetTimeout.js";
 
 export async function savedPeopleCommand() {
 	this.bot.updates.on("message_new", async (ctx, next) => {
@@ -33,7 +34,7 @@ export async function savedPeopleCommand() {
 
 			const viewModel = await createArrayOfSavedPeopleView.call(this, currentUser.savedPeople, currentUser.currentPageIndex, currentUser);
 
-			await new Promise(res => setTimeout(res, 500));
+			await asyncSetTimeout(500);
 
 			await editMessageApi({
 				message: `Найдено ${viewModel.countPeople} сохраненных людей ${currentUser.lengthOfPages ? `, страница ${currentUser.currentPageIndex + 1} из ${currentUser.lengthOfPages}:` : ""}`,

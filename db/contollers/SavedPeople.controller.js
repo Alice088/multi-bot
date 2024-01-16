@@ -72,3 +72,9 @@ export async function getSavedPeopleByID(ID) {
 		text: rows.length === 0 ? "Человек не найден" : null
 	};
 }
+
+export async function checkDuplicateSavedPeople(ownerID, username) {
+	const savedPeople = await getSavedPeopleByOwnerID(ownerID);
+
+	return [...Object.values(...savedPeople.rows)].includes(username);
+}

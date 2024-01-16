@@ -1,4 +1,4 @@
-import { createUser, deleteUser, getAllUsers, getUser, updateTGUsername, updateVKUsername } from "../../db/contollers/User.controller";
+import { createUser, deleteUser, getAllUsers, getUserByUsername, getUserByID, updateTGUsername, updateVKUsername } from "../../db/contollers/User.controller";
 import { connection } from "../../db/Database.config";
 import { describe, expect, test, afterAll } from "@jest/globals";
 
@@ -9,8 +9,14 @@ describe("CRUD of User", () => {
 		expect(newUser.result).toBeTruthy();
 	});
 
-	test("GET_USER: gets a User by his username, return { result: boolean, text: string | rows: User }", async () => {
-		const data = await getUser(newUser.ownerID);
+	test("GET_USER_BY_ID: gets a User by his ID, return { result: boolean, text: string | rows: User }", async () => {
+		const data = await getUserByID(newUser.ownerID);
+
+		expect(data.result).toBeTruthy();
+	});
+
+	test("GET_USER_BY_USERNAME: gets a User by his Username, return { result: boolean, text: string | rows: User }", async () => {
+		const data = await getUserByUsername("\"@@Bogdan\"");
 
 		expect(data.result).toBeTruthy();
 	});
@@ -29,7 +35,7 @@ describe("CRUD of User", () => {
 		const tgUserResult = await updateVKUsername("\"@@SuperGoshanes122\"", newUser.ownerID);
 
 		if (vkUserResult.result & tgUserResult.result) {
-			const gotNewUserData = await getUser(newUser.ownerID);
+			const gotNewUserData = await getUserByID(newUser.ownerID);
 			totalResult = gotNewUserData.rows[0].Telegram_Username === "\"@@SuperGoshan\"" && gotNewUserData.rows[0].Vkontakte_Username === "\"@@SuperGoshanes122\"";
 		}
 
