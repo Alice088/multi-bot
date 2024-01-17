@@ -16,9 +16,14 @@ export function chattingScene() {
 		new this.StepScene("Chatting", [
 			async function startChatting(ctx) {
 				const currentUser = this.userContext.users[ctx.senderId];
-				if (currentUser.interlocutor) return ctx.scene.step.next();
+				if (currentUser.interlocutor) {
+					await ctx.reply(`Ожидание ${currentUser.interlocutor.username}!...`, {
+						keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).inline()
+					});
+					return ctx.scene.step.next();
+				}
 
-				const homeButtonButton = { keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).inline() };
+				const homeButtonButton = { keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).oneTime() };
 
 				if (ctx.text === "Домой") {
 					ctx.reply("конец общения", {

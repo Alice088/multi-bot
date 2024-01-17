@@ -20,7 +20,14 @@ export async function savedPeopleCommand() {
 				});
 			
 			this.userContext.users[ctx.senderId].currentTable = { message_id: message.conversationMessageId, peer: message.peerId };
-		} 
+		} else if (ctx.messagePayload?.type === "savedPeople") {
+			const currentUser = this.userContext.users[ctx.senderId];
+			currentUser.interlocutor = {};
+			currentUser.interlocutor.ID = ctx.messagePayload.people.Saved_User_ID;
+			currentUser.interlocutor.username = ctx.messagePayload.people.Saved_Telegram_Username ?? ctx.messagePayload.people.Saved_Vkontakte_Username;
+
+			return await ctx.scene.enter("Chatting");
+		}
 
 		await next();
 	});
@@ -67,9 +74,13 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 	if (resultOfFetchData) {
 		for (const people of pages.at(currentPageIndex)) {
 			parentArray.push(
-				this.Keyboard.callbackButton({
-					label: `${people.saved_TGNAME ?? "⛔"}`,
+				this.Keyboard.textButton({
+					label: `${people.Saved_Telegram_Username ?? people.Saved_Vkontakte_Username ?? "⛔"}`,
 					color: "primary",
+					payload: {
+						type: "savedPeople",
+						people: people
+					}
 				}),
 			);
 		}
@@ -86,24 +97,37 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 }
 
 function creatingNavigationButtons(parentArray, pages, currentPageIndex) {
-	if (pages.length < 2) {
-		parentArray.push(this.Keyboard.homeButton);
-		return; 
-	} else if (currentPageIndex === 0) {
+	switch (true) {
+	case pages.length === 1: {
+		parentArray.push([
+			this.Keyboard.stopButton(),
+			this.Keyboard.stopButton(),
+		]);
+		break;
+	}
+			
+	case currentPageIndex === 0: {
 		parentArray.push([
 			this.Keyboard.stopButton(),
 			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" }),
 		]);
-	} else if ((currentPageIndex + 1) === pages.length) {
+		break;
+	}
+			
+	case (currentPageIndex + 1) === pages.length: {
 		parentArray.push([
 			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
 			this.Keyboard.stopButton(),
 		]);
-	} else {
+		break;
+	}
+			
+	default: {
 		parentArray.push([
 			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
 			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })
 		]);
+	}
 	}
 
 	parentArray.push(this.Keyboard.homeButton);
