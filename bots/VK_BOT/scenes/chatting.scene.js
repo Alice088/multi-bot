@@ -18,7 +18,7 @@ export function chattingScene() {
 				const currentUser = this.userContext.users[ctx.senderId];
 				if (currentUser.interlocutor) {
 					await ctx.reply(`Ожидание ${currentUser.interlocutor.username}!...`, {
-						keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).inline()
+						keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton])
 					});
 					return ctx.scene.step.next();
 				}
@@ -26,6 +26,8 @@ export function chattingScene() {
 				const homeButtonButton = { keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).oneTime() };
 
 				if (ctx.text === "Домой") {
+					ctx.send("Очистка данных...", { keyboard: this.Keyboard.keyboard([]) });
+
 					ctx.reply("конец общения", {
 						keyboard: this.Keyboard.keyboard(this.Keyboard.defaultKeyboard).oneTime()
 					});
@@ -46,6 +48,8 @@ export function chattingScene() {
 				const currentUser = this.userContext.users[ctx.senderId];
 				if (currentUser.interlocutor) return ctx.scene.step.next();
 				if (ctx.text === "Домой") {
+					ctx.send("Очистка данных...", { keyboard: this.Keyboard.keyboard([]) });
+
 					ctx.reply("конец общения", {
 						keyboard: this.Keyboard.keyboard(this.Keyboard.defaultKeyboard).oneTime()
 					});
@@ -92,9 +96,7 @@ export function chattingScene() {
 
 						if (messageRequestsForCurrentUser) {
 							for (const messagesText of messageRequestsForCurrentUser.messages) {
-								ctx.send(`${messagesText.text} \n отправлено: ${new Date(messagesText.timeStamp).toLocaleString("ru-RU") }`, {
-									keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]).inline()
-								});
+								ctx.send(`${messagesText.text}`);
 							}
 
 							queueOfRequests.deleteAllRequestFromOneUserForOneUser(currentUser.rows.ID, currentUser.interlocutor.ID);
@@ -113,6 +115,8 @@ export function chattingScene() {
 				}
 
 				if (ctx.text === "Домой") {
+					ctx.send("Очистка данных...", { keyboard: this.Keyboard.keyboard([]) });
+
 					ctx.reply("конец общения", {
 						keyboard: this.Keyboard.keyboard(this.Keyboard.defaultKeyboard).oneTime()
 					});
@@ -125,6 +129,7 @@ export function chattingScene() {
 					clearInterval(currentUser.chatting.clearNumber);
 					currentUser.chatting = null;
 					currentUser.interlocutor = null;
+
 					return ctx.scene.leave();
 				}
 			}.bind(this)

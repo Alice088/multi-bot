@@ -1,6 +1,8 @@
 {
   "include": [
-    "./server/QueueOfRequests/**/*.ts"
+    "./server/QueueOfRequests/**/*.ts",
+    "./bots/TG_BOT/**/*.ts",
+    "./config/**/**.ts"
   ],
   "exclude": [
     "node_modules",
