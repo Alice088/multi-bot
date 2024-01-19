@@ -1,6 +1,6 @@
 import { describe, expect, test} from "@jest/globals";
-import { QueueOfRequests } from "../../dist/controllers/QueueOfRequests.controller.js";
-import { MessageRequest } from "../../dist/controllers/MessageRequest.controller.js";
+import { QueueOfRequests } from "../../dist/server/QueueOfRequests/controllers/QueueOfRequests.controller.js";
+import { MessageRequest } from "../../dist/server/QueueOfRequests/controllers/MessageRequest.controller.js";
 
 
 describe("Controller of QueueOfRequests", () => {
@@ -9,10 +9,10 @@ describe("Controller of QueueOfRequests", () => {
   
 	test("adds one to the Queue", () => {
 		queueOfRequests.addInQueue(228, messageRequest.createMessageRequest({
-			senderId: 999,
 			text: "Hello!",
 			createdAt: Date.now()
-		}));
+		}, 999));
+
 
 		expect(queueOfRequests.getOneFromQueue(228, 999).FROMID).toBe(999);
 		queueOfRequests.clearQueue();
@@ -21,10 +21,9 @@ describe("Controller of QueueOfRequests", () => {
 	test("gets all from the Queue", () => {
 		for (let i = 0; i < 10; i++) {
 			queueOfRequests.addInQueue(228, messageRequest.createMessageRequest({
-				senderId: i,
 				text: "Hello!",
 				createdAt: Date.now()
-			}));
+			}, i));
 		}
     
 		expect(queueOfRequests.getAllFromQueue(228).length).toBe(10);
@@ -36,7 +35,7 @@ describe("Controller of QueueOfRequests", () => {
 			senderId: 999,
 			text: "Hello!",
 			createdAt: Date.now()
-		}));
+		}, 999));
 
 		expect(queueOfRequests.getOneFromQueue(228, 999).FROMID).toBe(999);
 		queueOfRequests.clearQueue();

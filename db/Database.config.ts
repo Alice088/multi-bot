@@ -1,17 +1,19 @@
-import mysql from "mysql2/promise.js";
-import { ConfigService } from "../dist/config/config.service.js";
+import mysql, { ConnectionOptions } from "mysql2/promise.js";
+import { ConfigService } from "../config/configService.class.js";
 
 const configService = new ConfigService();
 
 const startTimer = Date.now();
 
-export const connection = await mysql.createConnection({
+const access: ConnectionOptions = {
 	host: configService.get("SQL_HOST"),
 	database: configService.get("SQL_DATABASE"),
 	password: configService.get("SQL_PASSWORD"),
-	port: configService.get("SQL_PORT"),
+	port: +configService.get("SQL_PORT"),
 	user: configService.get("SQL_USER")
-}).catch(err => {
+};
+
+export const connection = await mysql.createConnection(access).catch(err => {
 	console.log("Database connection wasn't completed, because: \n ", err);
 	throw err;
 });	

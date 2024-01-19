@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { MessageRequest } from "../../dist/controllers/MessageRequest.controller.js";
+import { MessageRequest } from "../../dist/server/QueueOfRequests/controllers/MessageRequest.controller.js";
 
 
 describe("Controller of QueueOfRequests", () => {
@@ -19,10 +19,11 @@ describe("Controller of QueueOfRequests", () => {
 		};
 
 		const testMessageRequest = messageRequest.createMessageRequest({
-			senderId: 234,
 			text: "Hello!",
 			createdAt: date
-		});
+		}, 234);
+
+		console.log(testMessageRequest);
 
 		expect(testMessageRequest).toEqual(expectMessageRequest);
 	});

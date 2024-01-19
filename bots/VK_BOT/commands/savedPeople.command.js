@@ -1,4 +1,4 @@
-import { getSavedPeopleByOwnerID } from "../../../db/contollers/SavedPeople.controller.js";
+import { getSavedPeopleByOwnerID } from "../../../dist/db/contollers/SavedPeople.controller.js";
 import { buttonsDividerHook } from "../../../hooks/buttonsDivider.hook.js";
 import { editMessageApi } from "../api/messages/editMessage.api.js";
 import { asyncSetTimeout } from "../../../hooks/asyncSetTimeout.js";

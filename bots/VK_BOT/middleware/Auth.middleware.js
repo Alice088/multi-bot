@@ -1,4 +1,4 @@
-import { getUserByUsername, createUser, getUserByID } from "../../../db/contollers/User.controller.js";
+import { getUserByUsername, createUser, getUserByID } from "../../../dist/db/contollers/User.controller.js";
 
 export async function authMiddleware(ctx, next) {
 	if (!this.userContext.getUserContextById(ctx.senderId)) {

@@ -1,6 +1,6 @@
-import { connection } from "../../db/Database.config";
-import { createUser, deleteUser } from "../../db/contollers/User.controller";
-import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwnerID, deleteSavedPeople, checkDuplicateSavedPeople } from "../../db/contollers/SavedPeople.controller";
+import { connection } from "../../dist/db/Database.config.js";
+import { createUser, deleteUser } from "../../dist/db/contollers/User.controller.js";
+import { addSavedPeople, getSavedPeopleByID, getSavedPeopleByOwnerID, deleteSavedPeople, checkDuplicateSavedPeople } from "../../dist/db/contollers/SavedPeople.controller.js";
 import { describe, expect, test, afterAll } from "@jest/globals";
 
 const newUser = await createUser("\"@@BogdanSave\"", "\"@@SuperDuperBogdanSave\""); 

@@ -1,6 +1,6 @@
 import { asyncSetTimeout } from "../../../hooks/asyncSetTimeout.js";
-import { addSavedPeople, checkDuplicateSavedPeople } from "../../../db/contollers/SavedPeople.controller.js";
-import { getUserByUsername } from "../../../db/contollers/User.controller.js";
+import { addSavedPeople, checkDuplicateSavedPeople } from "../../../dist/db/contollers/SavedPeople.controller.js";
+import { getUserByUsername } from "../../../dist/db/contollers/User.controller.js";
 import { messageRequest, queueOfRequests } from "../../../index.js";
 
 export function chattingScene() {

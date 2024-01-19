@@ -1,5 +1,5 @@
 import { config, DotenvParseOutput } from "dotenv";
-import { IConfigService } from "./IConfigService.js";
+import { IConfigService } from "./IConfigService.interface.js";
 
 export class ConfigService implements IConfigService {
 	private config: DotenvParseOutput;

@@ -1,6 +1,7 @@
 import { connection } from "../Database.config.js";
+import * as mysql from "mysql2/promise";
 
-export async function addSavedPeople(ownerID, savedUserID, telegramUsername, vkontakteUsername) {
+export async function addSavedPeople(ownerID: number, savedUserID: number, telegramUsername: string, vkontakteUsername: string) {
 	const [rows] = await connection.execute(`
 		INSERT INTO saved_people (Owner_ID, Saved_User_ID, Saved_Telegram_Username, Saved_Vkontakte_Username)
 	 	VALUES (?, ?, ?, ?)`, [ownerID, savedUserID, telegramUsername, vkontakteUsername]
@@ -11,7 +12,7 @@ export async function addSavedPeople(ownerID, savedUserID, telegramUsername, vko
 			result: false,
 			text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
 		};
-	});
+	}) as mysql.RowDataPacket[];
 	
 	return {
 		result: true,
@@ -20,7 +21,7 @@ export async function addSavedPeople(ownerID, savedUserID, telegramUsername, vko
 	};
 }
 
-export async function deleteSavedPeople(id) {
+export async function deleteSavedPeople(id: number) {
 	await connection.execute("DELETE FROM saved_people WHERE ID = ?", [id])
 		.catch(error => {
 			console.error(error);
@@ -37,7 +38,7 @@ export async function deleteSavedPeople(id) {
 	};
 }
 
-export async function getSavedPeopleByOwnerID(ownerID) {
+export async function getSavedPeopleByOwnerID(ownerID: number) {
 	const [rows] = await connection.execute("SELECT * FROM saved_people WHERE Owner_ID IN (?)", [ownerID])
 		.catch(error => {
 			console.error(error);
@@ -46,7 +47,7 @@ export async function getSavedPeopleByOwnerID(ownerID) {
 				result: false,
 				text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
 			};
-		});
+		}) as mysql.RowDataPacket[];
 
 	return {
 		rows: rows,
@@ -55,7 +56,7 @@ export async function getSavedPeopleByOwnerID(ownerID) {
 	};
 }
 
-export async function getSavedPeopleByID(ID) {
+export async function getSavedPeopleByID(ID: number) {
 	const [rows] = await connection.execute("SELECT * FROM saved_people WHERE ID = ?", [ID])
 		.catch(error => {
 			console.error(error);
@@ -64,7 +65,7 @@ export async function getSavedPeopleByID(ID) {
 				result: false,
 				text: `Ошибка!: ${error.code}, сообщеие: ${error.message}`
 			};
-		});
+		}) as mysql.RowDataPacket[];
 
 	return {
 		rows: rows,
@@ -73,11 +74,11 @@ export async function getSavedPeopleByID(ID) {
 	};
 }
 
-export async function checkDuplicateSavedPeople(ownerID, username) {
+export async function checkDuplicateSavedPeople(ownerID: number, username: string) {
 	const savedPeople = await getSavedPeopleByOwnerID(ownerID);
 
 	let arrayOfPeople = [];
-	for (const peopleUsername of Object.values([...savedPeople.rows])) {
+	for (const peopleUsername of Object.values(savedPeople.rows)) {
 		arrayOfPeople?.push(peopleUsername.Saved_Telegram_Username, peopleUsername.Saved_Vkontakte_Username);
 	}
 

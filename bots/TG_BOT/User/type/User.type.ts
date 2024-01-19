@@ -1,10 +1,6 @@
-import { SavedPeople } from "./SavedPeople.js";
+import * as mysql2 from "mysql2/promise";
 
 export type User = {
-  id: number,
-  first_name: string,
-  last_name: string,
-  username: string
   row_id: number,
-  saved_people: SavedPeople[]
+  saved_people: mysql2.RowDataPacket
 }
