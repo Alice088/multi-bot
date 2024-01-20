@@ -1,3 +1,4 @@
+import { SavedPeople } from "../../bots/TG_BOT/User/type/SavedPeople.type.js";
 import { connection } from "../Database.config.js";
 import * as mysql from "mysql2/promise";
 
@@ -50,7 +51,7 @@ export async function getSavedPeopleByOwnerID(ownerID: number) {
 		}) as mysql.RowDataPacket[];
 
 	return {
-		rows: rows,
+		rows: rows as SavedPeople[],
 		result: rows.length === 0 ? false : true,
 		text: rows.length === 0 ? "Люди не найдены" : null
 	};
@@ -68,7 +69,7 @@ export async function getSavedPeopleByID(ID: number) {
 		}) as mysql.RowDataPacket[];
 
 	return {
-		rows: rows,
+		rows: rows as SavedPeople[],
 		result: rows.length === 0 ? false : true,
 		text: rows.length === 0 ? "Человек не найден" : null
 	};
@@ -78,8 +79,8 @@ export async function checkDuplicateSavedPeople(ownerID: number, username: strin
 	const savedPeople = await getSavedPeopleByOwnerID(ownerID);
 
 	let arrayOfPeople = [];
-	for (const peopleUsername of Object.values(savedPeople.rows)) {
-		arrayOfPeople?.push(peopleUsername.Saved_Telegram_Username, peopleUsername.Saved_Vkontakte_Username);
+	for (const key of Object.keys(savedPeople.rows)) {
+		arrayOfPeople?.push(key, key);
 	}
 
 	arrayOfPeople ??= [{}];

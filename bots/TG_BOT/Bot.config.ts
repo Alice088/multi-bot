@@ -8,6 +8,7 @@ import { HomeCommand } from "./Commands/Home.command.js";
 import { InfoCommand } from "./Commands/Info.command.js";
 import { AuthenticationMiddleware } from "./Middlewares/Authentication.middleware.js";
 import { Middleware } from "./Middlewares/Middleware.class.js";
+import { SavedPeopleCommand } from "./Commands/SavedPeople.command.js";
 
 class Bot {
 	bot: Telegraf<IBotContext>;
@@ -23,7 +24,8 @@ class Bot {
 		this.commands = [
 			new StartCommand(this.bot),
 			new HomeCommand(this.bot),
-			new InfoCommand(this.bot)
+			new InfoCommand(this.bot),
+			new SavedPeopleCommand(this.bot)
 		];
 
 		this.middlewares = [

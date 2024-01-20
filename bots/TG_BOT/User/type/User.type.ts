@@ -1,6 +1,13 @@
-import * as mysql2 from "mysql2/promise";
+import { createButtons } from "../../Commands/SavedPeople.command.js";
+import { SavedPeople } from "./SavedPeople.type.js";
 
 export type User = {
-  row_id: number,
-  saved_people: mysql2.RowDataPacket
+  row_id:         number,
+  saved_people: {
+    result:       boolean,
+    text:         string | null,
+    rows:         SavedPeople[]
+  },
+  currentPage: number,
+  savedPeopleButtons: ReturnType<typeof createButtons> | null
 }

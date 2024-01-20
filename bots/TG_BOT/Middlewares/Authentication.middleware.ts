@@ -11,27 +11,26 @@ export class AuthenticationMiddleware extends Middleware {
 	}
 
 	handle(): void {
-		this.bot.use(async (ctx, next) => {
+		this.bot.use(async (ctx: IBotContext, next) => {
 			if (!ctx.session?.users) {
 				ctx.session = { users: {} };
-				return next();
 			}
 
-
-			if (isUserContext(ctx)) {
-				const user = await getUserByUsername(ctx.message?.from.username ?? "*NOUSERNAME*");
+			if (!isUserContext(ctx)) {
+				const username = `"@@${ctx.from?.username}"`;
+				const user = await getUserByUsername(username ?? "*NOUSERNAME*");
 
 				switch (user.result) {
-				case false: {
-					const { ownerID } = await createUser(ctx.message?.from.username ?? null, null);
-					await createUserContext(ctx, ownerID);
-					break;
-				}	
+					case false: {
+						const { ownerID } = await createUser(username ?? "null", null);
+						await createUserContext(ctx, ownerID);
+						break;
+					}	
 						
-				case true: {
-					await createUserContext(ctx, user.rows[0].ID);
-					break;
-				}		
+					case true: {
+						await createUserContext(ctx, user.rows[0].ID);
+						break;
+					}		
 				}
 			}
 
