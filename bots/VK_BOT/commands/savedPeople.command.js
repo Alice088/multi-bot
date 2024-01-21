@@ -98,36 +98,36 @@ function creatingButtonsList(resultOfFetchData, parentArray, pages, errorText, c
 
 function creatingNavigationButtons(parentArray, pages, currentPageIndex) {
 	switch (true) {
-	case pages.length === 1: {
-		parentArray.push([
-			this.Keyboard.stopButton(),
-			this.Keyboard.stopButton(),
-		]);
-		break;
-	}
+		case pages.length === 1: {
+			parentArray.push([
+				this.Keyboard.stopButton(),
+				this.Keyboard.stopButton(),
+			]);
+			break;
+		}
 			
-	case currentPageIndex === 0: {
-		parentArray.push([
-			this.Keyboard.stopButton(),
-			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" }),
-		]);
-		break;
-	}
+		case currentPageIndex === 0: {
+			parentArray.push([
+				this.Keyboard.stopButton(),
+				this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" }),
+			]);
+			break;
+		}
 			
-	case (currentPageIndex + 1) === pages.length: {
-		parentArray.push([
-			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
-			this.Keyboard.stopButton(),
-		]);
-		break;
-	}
+		case (currentPageIndex + 1) === pages.length: {
+			parentArray.push([
+				this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
+				this.Keyboard.stopButton(),
+			]);
+			break;
+		}
 			
-	default: {
-		parentArray.push([
-			this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
-			this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })
-		]);
-	}
+		default: {
+			parentArray.push([
+				this.Keyboard.leftArrow({ direction: "Left", type: "pageNavigation" }),
+				this.Keyboard.rightArrow({ direction: "Right", type: "pageNavigation" })
+			]);
+		}
 	}
 
 	parentArray.push(this.Keyboard.homeButton);

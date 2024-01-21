@@ -14,15 +14,16 @@ export class SavedPeopleCommand extends Command {
 	handle(): void {
 		this.bot.action("Saved_people", async (ctx) => {
 			const user = getUser(ctx);
+			user.currentPage = 0;
+			
 			const createdButtons = createButtons(user);
 			const buttonsLayout = createButtonsLayout(createdButtons, user);
 			
 			user.saved_people = await getSavedPeopleByOwnerID(user.row_id);
-			user.currentPage = 0;
 			user.savedPeopleButtons = createdButtons;
 
 			ctx.editMessageText(`
-				страница ${user.currentPage + 1}.
+				страница ${user.currentPage + 1} из ${createdButtons.pagesLength}.
 				Найдено ${user.saved_people.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
@@ -31,12 +32,20 @@ export class SavedPeopleCommand extends Command {
 
 		this.bot.action("Saved_people_navigation_right", async (ctx) => {
 			const user = getUser(ctx);
-			user.currentPage =+ 1;
+			let buttonsLayout;
 
-			const buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
+			++user.currentPage;
+
+			if (user.savedPeopleButtons?.buttons.length === user.saved_people.rows.length) {
+				buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
+			} else {
+				const createdButtons = createButtons(user);
+				buttonsLayout = createButtonsLayout(createdButtons, user);
+				user.savedPeopleButtons = createdButtons;
+			}
 
 			ctx.editMessageText(`
-				страница ${user.currentPage + 1}.
+				страница ${user.currentPage + 1} из ${user.savedPeopleButtons.pagesLength}.
 				Найдено ${user.saved_people.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
@@ -44,12 +53,19 @@ export class SavedPeopleCommand extends Command {
 
 		this.bot.action("Saved_people_navigation_left", async (ctx) => {
 			const user = getUser(ctx);
-			user.currentPage =- 1;
+			let buttonsLayout;
+			--user.currentPage;
 
-			const buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
+			if (user.savedPeopleButtons?.buttons.length === user.saved_people.rows.length) {
+				buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
+			} else {
+				const createdButtons = createButtons(user);
+				buttonsLayout = createButtonsLayout(createdButtons, user);
+				user.savedPeopleButtons = createdButtons;
+			}
 
 			ctx.editMessageText(`
-				страница ${user.currentPage + 1}.
+				страница ${user.currentPage + 1} из ${user.savedPeopleButtons.pagesLength}.
 				Найдено ${user.saved_people.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
