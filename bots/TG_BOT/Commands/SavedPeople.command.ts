@@ -29,34 +29,32 @@ export class SavedPeopleCommand extends Command {
 			`, Markup.inlineKeyboard([...buttonsLayout]));
 		});
 
-
-		this.bot.action("Saved_people_navigation_right", async (ctx) => {
+		this.bot.command("people", async (ctx) => {
 			const user = getUser(ctx);
-			let buttonsLayout;
+			user.currentPage = 0;
 
-			++user.currentPage;
+			const createdButtons = createButtons(user);
+			const buttonsLayout = createButtonsLayout(createdButtons, user);
 
-			if (user.savedPeopleButtons?.buttons.length === user.saved_people.rows.length) {
-				buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
-			} else {
-				const createdButtons = createButtons(user);
-				buttonsLayout = createButtonsLayout(createdButtons, user);
-				user.savedPeopleButtons = createdButtons;
-			}
+			user.saved_people = await getSavedPeopleByOwnerID(user.row_id);
+			user.savedPeopleButtons = createdButtons;
 
-			ctx.editMessageText(`
-				страница ${user.currentPage + 1} из ${user.savedPeopleButtons.pagesLength}.
+			ctx.reply(`
+				страница ${user.currentPage + 1} из ${createdButtons.pagesLength}.
 				Найдено ${user.saved_people.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
 		});
 
-		this.bot.action("Saved_people_navigation_left", async (ctx) => {
+		this.bot.action(/.*Saved_people_navigation.*/, async (ctx) => {
 			const user = getUser(ctx);
+			const direction = ctx.match[0].split("_").includes("left");
+			const hasUserNewPeople = user.savedPeopleButtons?.buttons.length === user.saved_people.rows.length;
 			let buttonsLayout;
-			--user.currentPage;
 
-			if (user.savedPeopleButtons?.buttons.length === user.saved_people.rows.length) {
+			direction ? --user.currentPage : ++user.currentPage;
+
+			if (hasUserNewPeople) {
 				buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
 			} else {
 				const createdButtons = createButtons(user);
@@ -65,7 +63,7 @@ export class SavedPeopleCommand extends Command {
 			}
 
 			ctx.editMessageText(`
-				страница ${user.currentPage + 1} из ${user.savedPeopleButtons.pagesLength}.
+				страница ${user.currentPage + 1} из ${user.savedPeopleButtons?.pagesLength ?? 1}.
 				Найдено ${user.saved_people.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
