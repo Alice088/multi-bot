@@ -14,34 +14,42 @@ export class SavedPeopleCommand extends Command {
 	handle(): void {
 		this.bot.action("Saved_people", async (ctx) => {
 			const user = getUser(ctx);
-			user.currentPage = 0;
+			user.savedPeople.currentPage = 0;
 			
 			const createdButtons = createButtons(user);
 			const buttonsLayout = createButtonsLayout(createdButtons, user);
-			
-			user.saved_people = await getSavedPeopleByOwnerID(user.row_id);
-			user.savedPeopleButtons = createdButtons;
+
+			const gotSavedPeople = await getSavedPeopleByOwnerID(user.rowID);
+			user.savedPeople.rows = gotSavedPeople.rows;
+			user.savedPeople.result = gotSavedPeople.result;
+			user.savedPeople.text = gotSavedPeople.text;
+
+			user.savedPeople.savedPeopleButtons = createdButtons;
 
 			ctx.editMessageText(`
-				страница ${user.currentPage + 1} из ${createdButtons.pagesLength}.
-				Найдено ${user.saved_people.rows.length} людей:
+				страница ${user.savedPeople.currentPage + 1} из ${createdButtons.pagesLength}.
+				Найдено ${user.savedPeople.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
 		});
 
 		this.bot.command("people", async (ctx) => {
 			const user = getUser(ctx);
-			user.currentPage = 0;
+			user.savedPeople.currentPage = 0;
 
 			const createdButtons = createButtons(user);
 			const buttonsLayout = createButtonsLayout(createdButtons, user);
 
-			user.saved_people = await getSavedPeopleByOwnerID(user.row_id);
-			user.savedPeopleButtons = createdButtons;
+			const gotSavedPeople = await getSavedPeopleByOwnerID(user.rowID);
+			user.savedPeople.rows = gotSavedPeople.rows;
+			user.savedPeople.result = gotSavedPeople.result;
+			user.savedPeople.text = gotSavedPeople.text;
+
+			user.savedPeople.savedPeopleButtons = createdButtons;
 
 			ctx.reply(`
-				страница ${user.currentPage + 1} из ${createdButtons.pagesLength}.
-				Найдено ${user.saved_people.rows.length} людей:
+				страница ${user.savedPeople.currentPage + 1} из ${createdButtons.pagesLength}.
+				Найдено ${user.savedPeople.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
 		});
@@ -49,22 +57,22 @@ export class SavedPeopleCommand extends Command {
 		this.bot.action(/.*Saved_people_navigation.*/, async (ctx) => {
 			const user = getUser(ctx);
 			const direction = ctx.match[0].split("_").includes("left");
-			const hasUserNewPeople = user.savedPeopleButtons?.buttons.length === user.saved_people.rows.length;
+			const hasUserNewPeople = user.savedPeople.savedPeopleButtons?.buttons.length === user.savedPeople.rows.length;
 			let buttonsLayout;
 
-			direction ? --user.currentPage : ++user.currentPage;
+			direction ? --user.savedPeople.currentPage : ++user.savedPeople.currentPage;
 
 			if (hasUserNewPeople) {
-				buttonsLayout = createButtonsLayout(user.savedPeopleButtons, user);
+				buttonsLayout = createButtonsLayout(user.savedPeople.savedPeopleButtons, user);
 			} else {
 				const createdButtons = createButtons(user);
 				buttonsLayout = createButtonsLayout(createdButtons, user);
-				user.savedPeopleButtons = createdButtons;
+				user.savedPeople.savedPeopleButtons = createdButtons;
 			}
 
 			ctx.editMessageText(`
-				страница ${user.currentPage + 1} из ${user.savedPeopleButtons?.pagesLength ?? 1}.
-				Найдено ${user.saved_people.rows.length} людей:
+				страница ${user.savedPeople.currentPage + 1} из ${user.savedPeople.savedPeopleButtons?.pagesLength ?? 1}.
+				Найдено ${user.savedPeople.rows.length} людей:
 
 			`, Markup.inlineKeyboard([...buttonsLayout]));
 		});
@@ -73,10 +81,10 @@ export class SavedPeopleCommand extends Command {
 
 export function createButtons(user: User) {
 	const arrayOfButtons = [];
-	const pages = buttonsDividerHook(user.saved_people.rows);
+	const pages = buttonsDividerHook(user.savedPeople.rows);
 	
-	if (user.saved_people.result) {
-		for (const people of pages.at(user.currentPage)) {
+	if (user.savedPeople.result) {
+		for (const people of pages.at(user.savedPeople.currentPage)) {
 			arrayOfButtons.push(
 				Markup.button.callback(
 					`${people.Saved_Telegram_Username ?? people.Saved_Vkontakte_Username ?? "⛔"}`,
@@ -87,7 +95,7 @@ export function createButtons(user: User) {
 	} else {
 		arrayOfButtons.push(
 			Markup.button.callback(
-				user.saved_people.text as string,
+				user.savedPeople.text as string,
 				"None"
 			)
 		);
@@ -109,17 +117,17 @@ function createButtonsLayout(createdButtons: ReturnType<typeof createButtons> | 
 		buttonsLayout.push([button]);
 	}
 	
-	if (user.saved_people.result) {
+	if (user.savedPeople.result) {
 		switch (true) {
 			case createdButtons?.pagesLength === 1:
 				buttonsLayout.push([stopButton, stopButton]);
 				break;
 
-			case user.currentPage === 0:
+			case user.savedPeople.currentPage === 0:
 				buttonsLayout.push([stopButton, buttonToRight]);
 				break;
 
-			case (user.currentPage + 1) === createdButtons?.pagesLength:
+			case (user.savedPeople.currentPage + 1) === createdButtons?.pagesLength:
 				buttonsLayout.push([buttonToLeft, stopButton]);
 				break;
 
