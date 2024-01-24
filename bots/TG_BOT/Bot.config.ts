@@ -10,21 +10,19 @@ import { AuthenticationMiddleware } from "./Middlewares/Authentication.middlewar
 import { Middleware } from "./Middlewares/Middleware.class.js";
 import { SavedPeopleCommand } from "./Commands/SavedPeople.command.js";
 import { ChattingScene } from "./Scenes/Chatting.scene.js";
-import { Scene } from "./Scenes/Scene.abstract.js";
 import { ChattingCommand } from "./Commands/Chatting.command.js";
+import { UsersSessions } from "./Session/UsersSessions.class.js";
 
 class Bot {
-	bot: Telegraf<IBotContext>;
-	private commands: Command[] = [];
-	private middlewares: Middleware[] = [];
-	private scenes: Scene[] = [];
+	public  bot:         Telegraf<IBotContext>																																								;
+	private commands:    Command[]        																																					 			= [];
+	private middlewares: Middleware[]     																																					 			= [];
+	private scenes: 		 Scenes.Stage<Scenes.WizardContext<Scenes.WizardSessionData>, Scenes.SceneSessionData>[] 					= [];
+	public usersSessions: UsersSessions																																									;
 
 	constructor(private readonly configService: IConfigService) {
 		this.bot = new Telegraf<IBotContext>(configService.get("TOKEN_TG"));
-		const stage = new Scenes.Stage<Scenes.WizardContext>([new ChattingScene("Chatting", this.bot.context.session).scene]);
-		this.bot.use(session());
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.bot.use(stage.middleware() as any);
+		this.usersSessions = new UsersSessions();
 	}
 
 	async init() {
@@ -32,12 +30,16 @@ class Bot {
 			new StartCommand(this.bot),
 			new HomeCommand(this.bot),
 			new InfoCommand(this.bot),
-			new SavedPeopleCommand(this.bot),
+			new SavedPeopleCommand(this.bot, this.usersSessions),
 			new ChattingCommand(this.bot)
 		];
 
 		this.middlewares = [
-			new AuthenticationMiddleware(this.bot),
+			new AuthenticationMiddleware(this.bot, this.usersSessions),
+		];
+
+		this.scenes = [
+			new Scenes.Stage<Scenes.WizardContext>([new ChattingScene("Chatting", this.usersSessions).scene])
 		];
 
 		for (const middleware of this.middlewares) {
@@ -48,6 +50,12 @@ class Bot {
 			command.handle();
 		}
 
+		for (const stage of this.scenes) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			this.bot.use(stage.middleware() as any);
+		}
+
+		this.bot.use(session());
 		this.bot.launch({ dropPendingUpdates: true })
 			.catch((error) => {
 				console.log("Bot was no started");

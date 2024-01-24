@@ -22,7 +22,7 @@ export class ChattingCommand extends Command {
 		this.bot.action("Start_chatting", async (ctx: any) => {
 			await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
 
-			await ctx.sendMessage("Напишите @@Юзернейм человека(с двумя '@@')",  Markup.keyboard([
+			await ctx.sendMessage("Напишите Юзернейм человека(он уже должен быть быть в базе польвателей бота)",  Markup.keyboard([
 				Markup.button.text("Домой🏠")
 			])
 				.resize()

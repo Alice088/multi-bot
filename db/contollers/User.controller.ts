@@ -1,6 +1,12 @@
 import * as mysql from "mysql2/promise";
 import { connection } from "../Database.config.js";
 
+type User = {
+	ID: number,
+	Vkontakte_Username: string | null,
+	Telegram_Username: string | null
+}
+
 export async function createUser(telegramUsername: string | null, vkontakteUsername: string | null) {
 	const [rows] = await connection.execute("INSERT INTO users (Vkontakte_Username, Telegram_Username) VALUES (?, ?)", [vkontakteUsername, telegramUsername])
 		.catch(error => {
@@ -30,7 +36,7 @@ export async function getAllUsers() {
 		}) as mysql.RowDataPacket[];
 	
 	return {
-		rows: rows,
+		rows: rows as User[],
 		result: true
 	};
 }
@@ -47,7 +53,7 @@ export async function getUserByID(ID: number) {
 		}) as mysql.RowDataPacket[];
 	
 	return {
-		rows: rows,
+		rows: rows as User[],
 		result: rows.length === 0 ? false : true,
 		text: rows.length === 0 ? "Человек не найден" : null
 	};
@@ -65,7 +71,7 @@ export async function getUserByUsername(username: string) {
 		}) as mysql.RowDataPacket[];
 
 	return {
-		rows: rows,
+		rows: rows as User[],
 		result: rows.length === 0 ? false : true,
 		text: rows.length === 0 ? "Человек не найден" : null
 	};

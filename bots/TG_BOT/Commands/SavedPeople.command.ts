@@ -2,18 +2,19 @@ import { Markup, Telegraf } from "telegraf";
 import { Command } from "./Commad.class.js";
 import { IBotContext } from "../Context/Context.interface.js";
 import { User } from "../User/type/User.type.js";
-import { getUser } from "../Context/Users/getUser.hook.js";
 import { buttonsDividerHook } from "../../../hooks/buttonsDivider.hook.js";
 import { getSavedPeopleByOwnerID } from "../../../db/contollers/SavedPeople.controller.js";
+import { UsersSessions } from "../Session/UsersSessions.class.js";
 
 export class SavedPeopleCommand extends Command {
-	constructor(bot: Telegraf<IBotContext>) {
+	constructor(bot: Telegraf<IBotContext>, private usersSessions: UsersSessions) {
 		super(bot);
 	}
 
 	handle(): void {
 		this.bot.action("Saved_people", async (ctx) => {
-			const user = getUser(ctx);
+			const user = this.usersSessions.getUser(ctx.from?.id ?? ctx.callbackQuery.from.id);
+
 			user.savedPeople.currentPage = 0;
 			
 			const createdButtons = createButtons(user);
@@ -34,7 +35,7 @@ export class SavedPeopleCommand extends Command {
 		});
 
 		this.bot.command("people", async (ctx) => {
-			const user = getUser(ctx);
+			const user = this.usersSessions.getUser(ctx.from?.id ?? ctx.message.from.id);
 			user.savedPeople.currentPage = 0;
 
 			const createdButtons = createButtons(user);
@@ -55,7 +56,7 @@ export class SavedPeopleCommand extends Command {
 		});
 
 		this.bot.action(/.*Saved_people_navigation.*/, async (ctx) => {
-			const user = getUser(ctx);
+			const user = this.usersSessions.getUser(ctx.from?.id ?? ctx.callbackQuery.from.id);
 			const direction = ctx.match[0].split("_").includes("left");
 			const hasUserNewPeople = user.savedPeople.savedPeopleButtons?.buttons.length === user.savedPeople.rows.length;
 			let buttonsLayout;
