@@ -16,11 +16,12 @@ export class UsersSessions {
 		return this.users[ID];
 	}
   
-	public async createUser(ID: number | null | undefined, ownerID: number): Promise<void> {
+	public async createUser(ID: number | null | undefined, ownerID: number, username: string | undefined): Promise<void> {
 		const savedPeople = await getSavedPeopleByOwnerID(ownerID);
 
 		this.users[ID ?? "null"] = {
-			rowID: ownerID,
+			rowID: 		ownerID,
+			username: username ?? "No username",
 
 			savedPeople: {
 				result: savedPeople.result,
@@ -31,13 +32,14 @@ export class UsersSessions {
 			},
 
 			scenes: {
-				_firstTime: true,
-
-				interlocutor: null,
+				_firstTime: 				 true,
+				interlocutor: 			 null,
+				clearIntervalNumber: undefined,
 
 				get firstTime() {
-					const oldValue = this._firstTime;
-					this._firstTime = false;
+					const oldValue 	= this._firstTime;
+					this._firstTime = false					 ;
+					
 					return oldValue;
 				}
 			},

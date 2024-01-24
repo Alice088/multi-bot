@@ -1,6 +1,6 @@
 import { asyncSetTimeout } from "../../../hooks/asyncSetTimeout.js";
-import { addSavedPeople, checkDuplicateSavedPeople } from "../../../dist/db/contollers/SavedPeople.controller.js";
-import { getUserByUsername } from "../../../dist/db/contollers/User.controller.js";
+import { addSavedPeople, checkDuplicateSavedPeople } from "../../../db/contollers/SavedPeople.controller.js";
+import { getUserByUsername } from "../../../db/contollers/User.controller.js";
 import { messageRequest, queueOfRequests } from "../../../index.js";
 
 export function chattingScene() {
@@ -59,29 +59,29 @@ export function chattingScene() {
 				const interlocutor = await getUserByUsername(ctx.scene.state.interlocutorUsername);
 				
 				switch (interlocutor.result) {
-				case false: {						
-					await ctx.scene.leave();
-					await ctx.reply(interlocutor.text);
-					await asyncSetTimeout(1000);
-					await ctx.scene.enter("Chatting");
-					break;
-				}
+					case false: {						
+						await ctx.scene.leave();
+						await ctx.reply(interlocutor.text);
+						await asyncSetTimeout(1000);
+						await ctx.scene.enter("Chatting");
+						break;
+					}
 					
-				case true: {
-					currentUser.interlocutor = {};
-					currentUser.interlocutor.username = ctx.scene.state.interlocutorUsername;
-					currentUser.interlocutor.ID = interlocutor.rows[0].ID;
+					case true: {
+						currentUser.interlocutor = {};
+						currentUser.interlocutor.username = ctx.scene.state.interlocutorUsername;
+						currentUser.interlocutor.ID = interlocutor.rows[0].ID;
 
-					const isDuplicates = await checkDuplicateSavedPeople(currentUser.rows.ID, ctx.scene.state.interlocutorUsername);
-					if (!isDuplicates && currentUser.rows.ID !== interlocutor.rows[0].ID) {
-						await addSavedPeople(currentUser.rows.ID, interlocutor.rows[0].ID, ctx.scene.state.interlocutorUsername, null);
-					} 
-					await asyncSetTimeout(1000);
+						const isDuplicates = await checkDuplicateSavedPeople(currentUser.rows.ID, ctx.scene.state.interlocutorUsername);
+						if (!isDuplicates && currentUser.rows.ID !== interlocutor.rows[0].ID) {
+							await addSavedPeople(currentUser.rows.ID, interlocutor.rows[0].ID, ctx.scene.state.interlocutorUsername, null);
+						} 
+						await asyncSetTimeout(1000);
 				
-					await ctx.send("Ожидание собеседника!...");
-					await ctx.scene.step.next();
-					break;
-				}
+						await ctx.send("Ожидание собеседника!...");
+						await ctx.scene.step.next();
+						break;
+					}
 				}
 			}.bind(this),
 

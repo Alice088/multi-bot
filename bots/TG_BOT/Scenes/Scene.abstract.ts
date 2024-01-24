@@ -11,6 +11,6 @@ export abstract class Scene {
 
 	constructor() {}
 
-	protected abstract enterScene()	 : void
+	protected abstract enterStep()	 : void
 	protected abstract leaveHandler(): void
 }

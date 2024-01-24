@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ConfigService } from "../../../../dist/config/configService.class.js";
+import { ConfigService } from "../../../../config/configService.class.js";
 
 const configService = new ConfigService();
 

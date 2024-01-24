@@ -5,8 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "full-start": "tsc && node index.js",
+    "start": "node ./dist/index.js",
+    "full-start": "tsc && node ./dist/index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --detectOpenHandles",
     "build": "tsc",
     "build-clear": "rimraf dist && tsc"

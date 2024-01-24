@@ -2,6 +2,7 @@
   "include": [
     "./server/QueueOfRequests/**/*.ts",
     "./bots/TG_BOT/**/*.ts",
+    "./index.ts"
   ],
   "exclude": [
     "node_modules",
@@ -47,9 +48,9 @@
     "checkJs": false,                                  /* Enable error reporting in type-checked JavaScript files. */
     // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from 'node_modules'. Only applicable with 'allowJs'. */
     /* Emit */
-    // "declaration": true,                                /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    // "declarationDir": "declare",                             
-    // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
+    "declaration": true,                                /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    "declarationDir": "./dist/declare",                             
+    "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
     "emitDeclarationOnly": false,                      /* Only output d.ts files and not JavaScript files. */
     "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
     // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */

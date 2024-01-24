@@ -1,5 +1,5 @@
 import { VK } from "vk-io";
-import { ConfigService } from "../../dist/config/configService.class.js";
+import { ConfigService } from "../../config/configService.class.js";
 import { Keyboard } from "vk-io";
 import { SceneManager, StepScene } from "@vk-io/scenes";
 import { SessionManager } from "@vk-io/session";

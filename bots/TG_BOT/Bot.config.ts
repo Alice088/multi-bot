@@ -23,6 +23,14 @@ class Bot {
 	constructor(private readonly configService: IConfigService) {
 		this.bot = new Telegraf<IBotContext>(configService.get("TOKEN_TG"));
 		this.usersSessions = new UsersSessions();
+
+		this.scenes = [
+			new Scenes.Stage<Scenes.WizardContext>([new ChattingScene("Chatting", this.usersSessions).scene])
+		];
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		this.bot.use(session());
+		this.bot.use(this.scenes[0].middleware() as any);
 	}
 
 	async init() {
@@ -38,10 +46,6 @@ class Bot {
 			new AuthenticationMiddleware(this.bot, this.usersSessions),
 		];
 
-		this.scenes = [
-			new Scenes.Stage<Scenes.WizardContext>([new ChattingScene("Chatting", this.usersSessions).scene])
-		];
-
 		for (const middleware of this.middlewares) {
 			middleware.handle();
 		}
@@ -50,12 +54,6 @@ class Bot {
 			command.handle();
 		}
 
-		for (const stage of this.scenes) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.bot.use(stage.middleware() as any);
-		}
-
-		this.bot.use(session());
 		this.bot.launch({ dropPendingUpdates: true })
 			.catch((error) => {
 				console.log("Bot was no started");

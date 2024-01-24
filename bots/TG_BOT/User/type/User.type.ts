@@ -3,6 +3,7 @@ import { SavedPeople } from "./SavedPeople.type.js";
 
 export type User = {
   rowID:                 number,
+  username:              string
   
   savedPeople: {
     result:              boolean,
@@ -14,9 +15,8 @@ export type User = {
 
   scenes: {
     _firstTime:          boolean
-    
     interlocutor:        { ID: number, username: string } | null,
-
+    clearIntervalNumber: ReturnType<typeof setInterval> | undefined
     get firstTime():     boolean
   }
 }
