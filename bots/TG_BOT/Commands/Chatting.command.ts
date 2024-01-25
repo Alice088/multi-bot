@@ -4,6 +4,7 @@ import { Command } from "./Commad.class.js";
 import { IBotContext } from "../Context/Context.interface.js";
 import { UsersSessions } from "../Session/UsersSessions.class.js";
 import { getUserByUsername } from "../../../db/contollers/User.controller.js";
+import { addSavedPeople } from "../../../db/contollers/SavedPeople.controller.js";
 
 
 export class ChattingCommand extends Command {
@@ -16,6 +17,7 @@ export class ChattingCommand extends Command {
 			const user = this.usersSessions.getUser(ctx.update.callback_query.from.id);
 			const interlocutorUsername: string = `"${ctx.match[0].split("~:")[1].replace(/"/g, "")}"`;
 			const gotUser = await getUserByUsername(interlocutorUsername);
+			await addSavedPeople(user.rowID, gotUser.rows[0].ID, gotUser.rows[0].Telegram_Username, gotUser.rows[0].Vkontakte_Username);
 
 			user.scenes.interlocutor = {
 				ID: gotUser.rows[0].ID,

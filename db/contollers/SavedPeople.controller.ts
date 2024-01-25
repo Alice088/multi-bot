@@ -2,7 +2,7 @@ import { SavedPeople } from "../../bots/TG_BOT/User/type/SavedPeople.type.js";
 import { connection } from "../Database.config.js";
 import * as mysql from "mysql2/promise";
 
-export async function addSavedPeople(ownerID: number, savedUserID: number, telegramUsername: string, vkontakteUsername: string) {
+export async function addSavedPeople(ownerID: number, savedUserID: number, telegramUsername: string | null, vkontakteUsername: string | null) {
 	const [rows] = await connection.execute(`
 		INSERT INTO saved_people (Owner_ID, Saved_User_ID, Saved_Telegram_Username, Saved_Vkontakte_Username)
 	 	VALUES (?, ?, ?, ?)`, [ownerID, savedUserID, telegramUsername, vkontakteUsername]

@@ -8,6 +8,7 @@ import { messageRequest } from "../../../index.js";
 import { queueOfRequests } from "../../../index.js";
 import { ContextDefaultState, MessageContext } from "vk-io";
 import { User } from "../User/type/User.type.js";
+import { addSavedPeople } from "../../../db/contollers/SavedPeople.controller.js";
 
 export class ChattingScene extends Scene {
 	public 		scene        ;
@@ -39,13 +40,15 @@ export class ChattingScene extends Scene {
 
 				return this.chattingStep(ctx, user);
 			} else if (![ctx?.message?.text].includes("/chatting")) {
-				const gotUser = await getUserByUsername(`"@@${ctx.message.text}"`);
+				const gotUser = await getUserByUsername(`"@@${ctx.update.message.text}"`);
 
 				if (gotUser.result) {
 					user.scenes.interlocutor = {
 						ID: gotUser.rows[0].ID,
 						username: gotUser.rows[0].Telegram_Username ?? gotUser.rows[0].Vkontakte_Username ?? "Username doesn't found"
 					};
+
+					await addSavedPeople(user.rowID, gotUser.rows[0].ID, gotUser.rows[0].Telegram_Username, gotUser.rows[0].Vkontakte_Username);
 
 					user.scenes._firstTime = true;
 
