@@ -9,6 +9,7 @@ import { queueOfRequests } from "../../../index.js";
 import { ContextDefaultState, MessageContext } from "vk-io";
 import { User } from "../User/type/User.type.js";
 import { addSavedPeople } from "../../../db/contollers/SavedPeople.controller.js";
+import { message } from "telegraf/filters";
 
 export class ChattingScene extends Scene {
 	public 		scene        ;
@@ -26,21 +27,11 @@ export class ChattingScene extends Scene {
 	protected enterStep() {
 		this.leaveHandler();
 
-		return this.stepHandler.use(async (ctx: any, next) => {
-			const user = this.usersSessions.getUser(ctx.update?.callback_query?.from.id ?? ctx?.from?.id ?? ctx?.message?.from.id);
+		this.stepHandler.on(message("text"), async (ctx) => {
+			const user = this.usersSessions.getUser(ctx.message.from.id);
 
-			if (user.scenes.interlocutor) {
-				await ctx.reply(
-					`Ожидание собеседника ${user.scenes.interlocutor.username}.... \n(вы уже можете писать сообщения, они отправятся в очередь сообщений)`,
-					Markup.keyboard([
-						Markup.button.text("Домой🏠")
-					]).resize()
-						.oneTime()
-				);
-
-				return this.chattingStep(ctx, user);
-			} else if (![ctx?.message?.text].includes("/chatting")) {
-				const gotUser = await getUserByUsername(`"@@${ctx.update.message.text}"`);
+			if (user.scenes.waitingMessageByUser) {
+				const gotUser = await getUserByUsername(`"@@${ctx.update?.message.text ?? "*NOUSERNAME*"}"`);
 
 				if (gotUser.result) {
 					user.scenes.interlocutor = {
@@ -56,13 +47,28 @@ export class ChattingScene extends Scene {
 						`Ожидание собеседника ${user.scenes.interlocutor.username}.... \n(вы уже можете писать сообщения, они отправятся в очередь сообщений)`
 					);
 
+					user.scenes.waitingMessageByUser = false;
 					return this.chattingStep(ctx, user);
 				} else {
 					return ctx.reply("Человек не найден в базе");
 				}
 			}
+		});
 
-			return next();
+		return this.stepHandler.use(async (ctx: any, next) => {
+			const userId: number = ctx.update?.callback_query?.from.id ?? ctx.update?.callback_query?.message?.from.id ?? ctx.update.message.from.id;
+			const user = this.usersSessions.getUser(userId);
+
+			if (user.scenes.interlocutor) {
+				await ctx.reply(
+					`Ожидание собеседника ${user.scenes.interlocutor.username}.... \n(вы уже можете писать сообщения, они отправятся в очередь сообщений)`,
+					Markup.keyboard([ Markup.button.text("Домой🏠") ]).resize().oneTime()
+				);
+
+				this.chattingStep(ctx, user);
+
+				return next();
+			}
 		}).middleware();
 	}
 

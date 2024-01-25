@@ -36,6 +36,7 @@ export class UsersSessions {
 				interlocutor										 : null,
 				clearCheckInterlocutorInterval	 : undefined,
 				clearCheckMSGInterlocutorInterval: undefined,
+				waitingMessageByUser						 : false,
 
 				get firstTime() {
 					const oldValue 	= this._firstTime;

@@ -18,6 +18,7 @@ export type User = {
     interlocutor                     : { ID: number, username: string } | null,
     clearCheckMSGInterlocutorInterval: ReturnType<typeof setInterval> | undefined,
     clearCheckInterlocutorInterval   : ReturnType<typeof setInterval> | undefined,
+    waitingMessageByUser             : boolean
     get firstTime()                  : boolean
   }
 }

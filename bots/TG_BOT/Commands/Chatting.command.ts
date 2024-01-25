@@ -20,7 +20,7 @@ export class ChattingCommand extends Command {
 			await addSavedPeople(user.rowID, gotUser.rows[0].ID, gotUser.rows[0].Telegram_Username, gotUser.rows[0].Vkontakte_Username);
 
 			user.scenes.interlocutor = {
-				ID: gotUser.rows[0].ID,
+				ID			: gotUser.rows[0].ID,
 				username: gotUser.rows[0].Telegram_Username ?? gotUser.rows[0].Vkontakte_Username as string
 			};
 
@@ -28,16 +28,20 @@ export class ChattingCommand extends Command {
 		});
 
 		this.bot.command("chatting", async (ctx: any) => {
+			const user = this.usersSessions.getUser(ctx.update.callback_query.from.id);
+
 			await ctx.sendMessage("Напишите Юзернейм человека(он уже должен быть быть в базе пользователей бота)", Markup.keyboard([
 				Markup.button.text("Домой🏠")
 			])
 				.resize()
 				.oneTime());
-
+			
+			user.scenes.waitingMessageByUser = true;
 			return ctx.scene.enter("Chatting");
 		});
 
 		this.bot.action("Start_chatting", async (ctx: any) => {
+			const user = this.usersSessions.getUser(ctx.update.callback_query.from.id);
 			await ctx.deleteMessage(ctx.update.callback_query.message.message_id);
 
 			await ctx.sendMessage("Напишите Юзернейм человека(он уже должен быть быть в базе пользователей бота)",  Markup.keyboard([
@@ -46,6 +50,7 @@ export class ChattingCommand extends Command {
 				.resize()
 				.oneTime());
 
+			if(user.scenes.interlocutor) user.scenes.waitingMessageByUser = true;
 			return ctx.scene.enter("Chatting");
 		});
 	}
