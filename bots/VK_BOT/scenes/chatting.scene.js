@@ -17,9 +17,9 @@ export function chattingScene() {
 			async function startChatting(ctx) {
 				const currentUser = this.userContext.users[ctx.senderId];
 				if (currentUser.interlocutor) {
-					await ctx.reply(`Ожидание ${currentUser.interlocutor.username}!...`, {
-						keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton])
-					});
+					await ctx.reply(
+						`Ожидание ${currentUser.interlocutor.username}.... \n(вы уже можете писать сообщения, они отправятся в очередь сообщений)`,
+						{ keyboard: this.Keyboard.keyboard([this.Keyboard.homeButton]) });
 					return ctx.scene.step.next();
 				}
 

@@ -20,21 +20,22 @@ export class UsersSessions {
 		const savedPeople = await getSavedPeopleByOwnerID(ownerID);
 
 		this.users[ID ?? "null"] = {
-			rowID: 		ownerID,
+			rowID		: ownerID,
 			username: username ?? "No username",
 
 			savedPeople: {
-				result: savedPeople.result,
-				text: savedPeople.text,
-				rows: savedPeople.rows,
-				currentPage: 0,
+				result						: savedPeople.result,
+				text							: savedPeople.text,
+				rows							: savedPeople.rows,
+				currentPage				: 0,
 				savedPeopleButtons: null,
 			},
 
 			scenes: {
-				_firstTime: 				 true,
-				interlocutor: 			 null,
-				clearIntervalNumber: undefined,
+				_firstTime											 : true,
+				interlocutor										 : null,
+				clearCheckInterlocutorInterval	 : undefined,
+				clearCheckMSGInterlocutorInterval: undefined,
 
 				get firstTime() {
 					const oldValue 	= this._firstTime;

@@ -89,7 +89,7 @@ export function createButtons(user: User) {
 			arrayOfButtons.push(
 				Markup.button.callback(
 					`${people.Saved_Telegram_Username ?? people.Saved_Vkontakte_Username ?? "⛔"}`,
-					"Save_people"
+					`Saved_people_chatting~:${people.Saved_Telegram_Username ?? people.Saved_Vkontakte_Username}`
 				)
 			);
 		}

@@ -14,22 +14,22 @@ import { ChattingCommand } from "./Commands/Chatting.command.js";
 import { UsersSessions } from "./Session/UsersSessions.class.js";
 
 class Bot {
-	public  bot:         Telegraf<IBotContext>																																								;
-	private commands:    Command[]        																																					 			= [];
-	private middlewares: Middleware[]     																																					 			= [];
-	private scenes: 		 Scenes.Stage<Scenes.WizardContext<Scenes.WizardSessionData>, Scenes.SceneSessionData>[] 					= [];
-	public usersSessions: UsersSessions																																									;
+	public  bot				   : Telegraf<IBotContext>																																								;
+	private commands	   : Command[]        																																					 			= [];
+	private middlewares  : Middleware[]     																																					 			= [];
+	private scenes		   : Scenes.Stage<Scenes.WizardContext<Scenes.WizardSessionData>, Scenes.SceneSessionData>[] 					= [];
+	public  usersSessions: UsersSessions																																									;
 
 	constructor(private readonly configService: IConfigService) {
-		this.bot = new Telegraf<IBotContext>(configService.get("TOKEN_TG"));
+		this.bot 					 = new Telegraf<IBotContext>(configService.get("TOKEN_TG"));
 		this.usersSessions = new UsersSessions();
 
 		this.scenes = [
 			new Scenes.Stage<Scenes.WizardContext>([new ChattingScene("Chatting", this.usersSessions).scene])
 		];
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.bot.use(session());
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.bot.use(this.scenes[0].middleware() as any);
 	}
 
@@ -39,7 +39,7 @@ class Bot {
 			new HomeCommand(this.bot),
 			new InfoCommand(this.bot),
 			new SavedPeopleCommand(this.bot, this.usersSessions),
-			new ChattingCommand(this.bot)
+			new ChattingCommand(this.bot, this.usersSessions)
 		];
 
 		this.middlewares = [

@@ -19,17 +19,19 @@ export class AuthenticationMiddleware extends Middleware {
 					case false: {
 						const { ownerID } = await createUser(username ?? "null", null);
 						await this.usersSessions.createUser(ctx.from?.id, ownerID, ctx.from?.username);
+						return await next();
 						break;
 					}	
 						
 					case true: {
 						await this.usersSessions.createUser(ctx.from?.id, user.rows[0].ID, ctx.from?.username);
+						return await next();
 						break;
 					}		
 				}
 			}
 
-			return next();
+			return await next();
 		});
 	}
 }
