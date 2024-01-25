@@ -9,7 +9,8 @@ and inversely write from vk to tg powered by bots
 
 ## Tech Stack  
 **Client:** <br>
-Telegram-bot(https://t.me/GoshaMultiBot) (don't work yet), <br>
+Telegram-bot(https://t.me/GoshaMultiBot),
+<br>
 Vk-bot(https://vk.com/club223734402)
 
 **Server:** <br>
